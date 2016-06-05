@@ -13,6 +13,7 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server, {
     origins: 'localhost:* http://localhost:*'
 });
+var striptags = require('striptags'); 
 
 var maps = require('./map');
 
@@ -79,13 +80,13 @@ io.sockets.on('connection', function(socket) {
     socket.on('join:room', function(data) {
         if (data.roomId in maps) {
             socket.join('room' + data.roomId);
-            console.log(maps[data.roomId]);
             this.emit('send:map', maps[data.roomId]);
             this.roomId = data.roomId;
         }
     });
     // Broadcast to room
     socket.on('send:message', function(data) {
-        io.sockets.in('room' + this.roomId).emit('send:message', data.message);
+        var msg = striptags(data.message); 
+        io.sockets.in('room' + this.roomId).emit('send:message', msg);
     });
 });
