@@ -10,9 +10,10 @@ var users = require('./routes/users');
 
 var app = express();
 var server = require('http').Server(app);
-var io = require('socket.io')(server, {
-    origins: 'localhost:* http://localhost:*'
-});
+//var io = require('socket.io')(server, {
+//    origins: 'localhost:* http://localhost:*'
+//});
+var io = require('socket.io')(server);
 var striptags = require('striptags'); 
 
 var maps = require('./map');

@@ -1,6 +1,7 @@
 $(function() {
     // Socket.io connection
-    var socket = io.connect('http://localhost:10332'),
+    var hostname = local_data.hostname;
+    var socket = io.connect(hostname),
         roomId = '';
     // Join to room
     function join(roomId) {
