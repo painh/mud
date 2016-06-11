@@ -6,7 +6,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
 
 var app = express();
 var server = require('http').Server(app);
@@ -34,7 +33,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -77,7 +75,7 @@ server.listen(port, function() {
 });
 
 function makeRoomPacket(socket) {
-    var room = maps[socket.roomId];
+    var room = maps[socket.obj.roomId];
     var description = "=== " + room.displayName + "===<br/>" +
         room.description + "<br/>";
 
@@ -86,14 +84,23 @@ function makeRoomPacket(socket) {
         if (obj == socket.obj)
             continue;
 
-        description += obj.displayName + "가 서 있습니다." + "<br/>";
+        description += obj.displayName + "(이)가 서 있습니다." + "<br/>";
     }
 
     return description;
 }
 
+function makeCursor(socket) {
+    return "[" + socket.obj.hp + "]<br/>";
+}
+
 function sendMsg(socket, msg) {
     socket.emit('send:message', msg);
+    socket.emit('send:message', makeCursor(socket));
+}
+
+function sendMsgToRoom(roomId, msg) {
+    io.sockets.in('room' + roomId).emit('send:message', msg);
 }
 
 function findObj(roomId, displayName) {
@@ -111,41 +118,70 @@ setInterval(worldTicker, 3000);
 
 var g_clients = [];
 
+function attack(obj) {
+    var targetList = obj.combatTargets;
+    if (targetList.length == 0)
+        return;
+
+    var target = targetList[0];
+    target.hp -= obj.ap;
+    var str = obj.displayName + "(이)가 " + target.displayName + "(을)를 공격하였습니다. [-" + obj.ap + "]";
+    sendMsgToRoom(target.roomId, str);
+}
+
 function worldTicker() {
+    //TODO combatlist를 만들어서 속도 기분으로 소팅하는 식으로 선빵을 만들어야함...
     for (var i in g_clients) {
         var client = g_clients[i];
+        attack(client.obj);
     }
 }
 
 function combat(src, desc) {
-    src.combatTargets
+    if (src.combatTargets.indexOf(desc) == -1) {
+        src.combatTargets.push(desc);
+    }
+
+    if (desc.combatTargets.indexOf(src) == -1) {
+        desc.combatTargets.push(src);
+    }
+
+    console.log(src, desc);
 }
 
-function sendMsgToRoom(socket, msg) {
-    io.sockets.in('room' + socket.roomId).emit('send:message', msg);
-}
 
 function sendChat(socket, msg) {
-    sendMsgToRoom(socket, socket.obj.displayName + "(이)가 [" + msg + ']라고 말 합니다.</br>');
+    sendMsgToRoom(socket.obj.roomId, socket.obj.displayName + "(이)가 [" + msg + ']라고 말 합니다.</br>');
 }
 
 function roomJoin(roomId, socket) {
-    var room = maps[roomId];
+    roomLeave(socket);
 
+    var room = maps[roomId]; 
     socket.join('room' + roomId);
-    socket.roomId = roomId;
+    socket.obj.roomId = roomId;
     sendMsg(socket, makeRoomPacket(socket));
 
     room.objects.push(socket.obj);
 }
 
-function roomLeave(socket) {
-    if (!socket.roomId in maps)
+function removeFromList(list, obj)
+{
+    var idx = list.indexOf(obj);
+    if(idx == -1)
         return;
 
-    var room = maps[socket.roomId];
-    room.objects.splice(room.objects.indexOf(socket.obj), 1);
-    socket.leave('room' + socket.roomId);
+    list.splice(idx, 1);
+}
+
+function roomLeave(socket) {
+    var roomId = socket.obj.roomId;
+    if (!maps[roomId])
+        return;
+
+    var room = maps[roomId];
+    removeFromList(room.objects, socket.obj);
+    socket.leave('room' + socket.obj.roomId);
 }
 
 // Socket.io
@@ -154,6 +190,8 @@ io.sockets.on('connection', function(socket) {
         displayName: "플레이어" + socket.id,
         hp: 100,
         ap: 10,
+        combatTargets: [],
+        roomId : "entry"
     };
     socket.obj = user;
 
@@ -161,8 +199,7 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('disconnect', function() {
         roomLeave(socket);
-        g_clients.splice(g_clients.indexOf(socket), 1);
-        console.log('out');
+        removeFromList(g_clients, socket);
     });
     // Join Room
     socket.on('join:room', function(data) {
@@ -185,15 +222,14 @@ io.sockets.on('connection', function(socket) {
 
             }
         } else {
-            var obj = findObj(this.roomId, split[0])
+            var obj = findObj(this.obj.roomId, split[0])
             if (obj) {
-                if (split.length > 2 && split[1] == "쳐") {
-                    combat(this.user, obj);
+                if (split.length >= 2 && split[1] == "쳐") {
+                    combat(this.obj, obj);
                     return;
                 }
             }
         }
-        console.log("sdf");
         sendChat(this, msg);
     });
 });

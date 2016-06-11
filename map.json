@@ -6,9 +6,12 @@
             "protoID": 1
         }],
         "objects": [{
+            "protoID": 1,
             "displayName": "몹1",
             "hp": 100,
-            "ap": 5
+            "ap": 5,
+            "combatTargets" : [],
+            "roomId" : "entry"
         }]
     }
 }

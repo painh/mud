@@ -14,11 +14,15 @@ $(function() {
         join('entry');
     });
 
-    function print(data) {
-        $('#log').append('<p>' + data + '</p>');
-        var wtf    = $('#content');
+    function scroll() {
+        var wtf = $('#content');
         var height = wtf[0].scrollHeight;
         wtf.scrollTop(height);
+    }
+
+    function print(data) {
+        $('#log').append('<p>' + data + '</p>');
+        scroll();
     }
 
     socket.on('send:message', function(data) {
@@ -26,6 +30,7 @@ $(function() {
     });
 
     $("#message").focus();
+
     $("#message").keyup(function(event) {
         if (event.keyCode != 13)
             return;
@@ -40,4 +45,14 @@ $(function() {
             message: msg
         });
     });
+
+    $('body').resize(function() {
+        scroll();
+    });
+
+
+    for (var i = 0; i < 100; ++i)
+        print('<br/>');
+
+
 });
