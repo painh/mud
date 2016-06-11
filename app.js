@@ -76,13 +76,16 @@ server.listen(port, function() {
     console.log("open " + port);
 });
 
-function makeRoomPacket(roomId) {
-    var room = maps[roomId];
+function makeRoomPacket(socket) {
+    var room = maps[socket.roomId];
     var description = "=== " + room.displayName + "===<br/>" +
         room.description + "<br/>";
 
     for (var i in room.objects) {
         var obj = room.objects[i];
+        if (obj == socket.obj)
+            continue;
+
         description += obj.displayName + "가 서 있습니다." + "<br/>";
     }
 
@@ -107,28 +110,42 @@ function findObj(roomId, displayName) {
 setInterval(worldTicker, 3000);
 
 var g_clients = [];
-function worldTicker() {
-    console.log(g_clients.length);
 
-    for(var i in g_clients)
-    {
+function worldTicker() {
+    for (var i in g_clients) {
         var client = g_clients[i];
     }
 }
 
-function combat(src, desc)
-{
+function combat(src, desc) {
     src.combatTargets
 }
 
-function sendMsgToRoom(socket, msg)
-{
+function sendMsgToRoom(socket, msg) {
     io.sockets.in('room' + socket.roomId).emit('send:message', msg);
 }
 
-function sendChat(socket, msg)
-{
+function sendChat(socket, msg) {
     sendMsgToRoom(socket, socket.obj.displayName + "(이)가 [" + msg + ']라고 말 합니다.</br>');
+}
+
+function roomJoin(roomId, socket) {
+    var room = maps[roomId];
+
+    socket.join('room' + roomId);
+    socket.roomId = roomId;
+    sendMsg(socket, makeRoomPacket(socket));
+
+    room.objects.push(socket.obj);
+}
+
+function roomLeave(socket) {
+    if (!socket.roomId in maps)
+        return;
+
+    var room = maps[socket.roomId];
+    room.objects.splice(room.objects.indexOf(socket.obj), 1);
+    socket.leave('room' + socket.roomId);
 }
 
 // Socket.io
@@ -143,15 +160,14 @@ io.sockets.on('connection', function(socket) {
     g_clients.push(socket);
 
     socket.on('disconnect', function() {
+        roomLeave(socket);
         g_clients.splice(g_clients.indexOf(socket), 1);
         console.log('out');
     });
     // Join Room
     socket.on('join:room', function(data) {
         if (data.roomId in maps) {
-            this.join('room' + data.roomId);
-            this.roomId = data.roomId;
-            sendMsg(this, makeRoomPacket(this.roomId));
+            roomJoin(data.roomId, socket);
         }
     });
     // Broadcast to room
@@ -159,12 +175,12 @@ io.sockets.on('connection', function(socket) {
         var msg = striptags(data.message);
         var split = msg.split(' ');
 
-//        io.sockets.in('room' + this.roomId).emit('send:message', msg);
+        //        io.sockets.in('room' + this.roomId).emit('send:message', msg);
 
         if (split.length == 1) {
             switch (split[0]) {
                 case '봐':
-                    sendMsg(this, makeRoomPacket(this.roomId));
+                    sendMsg(this, makeRoomPacket(this));
                     return;
 
             }
@@ -175,7 +191,7 @@ io.sockets.on('connection', function(socket) {
                     combat(this.user, obj);
                     return;
                 }
-            } 
+            }
         }
         console.log("sdf");
         sendChat(this, msg);
