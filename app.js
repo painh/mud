@@ -14,7 +14,7 @@ var server = require('http').Server(app);
 //    origins: 'localhost:* http://localhost:*'
 //});
 var io = require('socket.io')(server);
-var striptags = require('striptags'); 
+var striptags = require('striptags');
 
 var maps = require('./map');
 var proto_object = require('./proto_object');
@@ -76,29 +76,76 @@ server.listen(port, function() {
     console.log("open " + port);
 });
 
-function makeRoomPacket(roomId)
-{
+function makeRoomPacket(roomId) {
     var room = maps[roomId];
-    var description =  "=== " + room.displayName + "===<br/>" +
-                        room.description+"<br/>";
+    var description = "=== " + room.displayName + "===<br/>" +
+        room.description + "<br/>";
 
-    for(var i in room.objects)
-    {
-        var item = room.objects[i];
-        var obj = proto_object[item.protoID];
-        description += obj.displayName + "가 서 있습니다."+"<br/>";
-    } 
+    for (var i in room.objects) {
+        var obj = room.objects[i];
+        description += obj.displayName + "가 서 있습니다." + "<br/>";
+    }
 
     return description;
 }
 
-function sendMsg(socket, msg)
-{
+function sendMsg(socket, msg) {
     socket.emit('send:message', msg);
+}
+
+function findObj(roomId, displayName) {
+    var room = maps[roomId];
+    for (var i in room.objects) {
+        var obj = room.objects[i];
+        if (displayName == obj.displayName)
+            return obj;
+    }
+
+    return false;
+}
+
+setInterval(worldTicker, 3000);
+
+var g_clients = [];
+function worldTicker() {
+    console.log(g_clients.length);
+
+    for(var i in g_clients)
+    {
+        var client = g_clients[i];
+    }
+}
+
+function combat(src, desc)
+{
+    src.combatTargets
+}
+
+function sendMsgToRoom(socket, msg)
+{
+    io.sockets.in('room' + socket.roomId).emit('send:message', msg);
+}
+
+function sendChat(socket, msg)
+{
+    sendMsgToRoom(socket, socket.obj.displayName + "(이)가 [" + msg + ']라고 말 합니다.</br>');
 }
 
 // Socket.io
 io.sockets.on('connection', function(socket) {
+    var user = {
+        displayName: "플레이어" + socket.id,
+        hp: 100,
+        ap: 10,
+    };
+    socket.obj = user;
+
+    g_clients.push(socket);
+
+    socket.on('disconnect', function() {
+        g_clients.splice(g_clients.indexOf(socket), 1);
+        console.log('out');
+    });
     // Join Room
     socket.on('join:room', function(data) {
         if (data.roomId in maps) {
@@ -109,22 +156,28 @@ io.sockets.on('connection', function(socket) {
     });
     // Broadcast to room
     socket.on('send:message', function(data) {
-        var msg = striptags(data.message); 
+        var msg = striptags(data.message);
         var split = msg.split(' ');
 
-        io.sockets.in('room' + this.roomId).emit('send:message', msg);
+//        io.sockets.in('room' + this.roomId).emit('send:message', msg);
 
-        if(split.length == 1)
-        {
-            switch(split[0])
-            {
+        if (split.length == 1) {
+            switch (split[0]) {
                 case '봐':
                     sendMsg(this, makeRoomPacket(this.roomId));
-                    break;
-                    
+                    return;
+
             }
+        } else {
+            var obj = findObj(this.roomId, split[0])
+            if (obj) {
+                if (split.length > 2 && split[1] == "쳐") {
+                    combat(this.user, obj);
+                    return;
+                }
+            } 
         }
-
-
+        console.log("sdf");
+        sendChat(this, msg);
     });
 });
