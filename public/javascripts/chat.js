@@ -25,11 +25,6 @@ $(function() {
         print(data);
     });
 
-    socket.on('send:map', function(data) {
-        print("===" + data.displayName + "===");
-        print(data.description);
-    });
-
     $("#message").focus();
     $("#message").keyup(function(event) {
         if (event.keyCode != 13)

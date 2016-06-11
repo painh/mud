@@ -17,6 +17,7 @@ var io = require('socket.io')(server);
 var striptags = require('striptags'); 
 
 var maps = require('./map');
+var proto_object = require('./proto_object');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -75,19 +76,55 @@ server.listen(port, function() {
     console.log("open " + port);
 });
 
+function makeRoomPacket(roomId)
+{
+    var room = maps[roomId];
+    var description =  "=== " + room.displayName + "===<br/>" +
+                        room.description+"<br/>";
+
+    for(var i in room.objects)
+    {
+        var item = room.objects[i];
+        var obj = proto_object[item.protoID];
+        description += obj.displayName + "가 서 있습니다."+"<br/>";
+    } 
+
+    return description;
+}
+
+function sendMsg(socket, msg)
+{
+    socket.emit('send:message', msg);
+}
+
 // Socket.io
 io.sockets.on('connection', function(socket) {
     // Join Room
     socket.on('join:room', function(data) {
         if (data.roomId in maps) {
-            socket.join('room' + data.roomId);
-            this.emit('send:map', maps[data.roomId]);
+            this.join('room' + data.roomId);
             this.roomId = data.roomId;
+            sendMsg(this, makeRoomPacket(this.roomId));
         }
     });
     // Broadcast to room
     socket.on('send:message', function(data) {
         var msg = striptags(data.message); 
+        var split = msg.split(' ');
+
         io.sockets.in('room' + this.roomId).emit('send:message', msg);
+
+        if(split.length == 1)
+        {
+            switch(split[0])
+            {
+                case '봐':
+                    sendMsg(this, makeRoomPacket(this.roomId));
+                    break;
+                    
+            }
+        }
+
+
     });
 });
