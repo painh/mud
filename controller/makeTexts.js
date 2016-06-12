@@ -19,6 +19,11 @@ MakeTexts.prototype.MakeRoomPacket = function(room, socket) {
 
     return description;
 }
+
+MakeTexts.prototype.Talk = function(who, msg)
+{
+    return who + "(이)가 [" + msg + ']라고 말 합니다.</br>';
+}
 module.exports = function() {
     console.log('make text constructor!');
     return new MakeTexts();

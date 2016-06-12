@@ -34,6 +34,14 @@ Room.prototype.Leave = function(socket) {
     socket.leave('room' + this.roomId);
 }
 
+Room.prototype.SendMsg = function(msg) {
+    g_io.sockets.in('room' + this.roomId).emit('send:message', msg);
+}
+
+Room.prototype.SendChat = function(obj, msg) {
+    this.SendMsg(g_makeTexts.Talk(obj.displayName, msg));
+}
+
 var RoomManager = function() {
     this.list = {};
     for (var i in maps) {
@@ -68,7 +76,11 @@ RoomManager.prototype.Leave = function(roomId, socket) {
 }
 
 RoomManager.prototype.sendMsgToRoom = function(roomId, msg) {
-    g_io.sockets.in('room' + roomId).emit('send:message', msg);
+    var room = this.GetById(roomId);
+    if (!room)
+        return;
+
+    room.SendMsg(msg);
 }
 
 module.exports = function(makeTexts, utils, io) {

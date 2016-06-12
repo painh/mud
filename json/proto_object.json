@@ -1,6 +1,12 @@
 {
+    "player" : {
+        "displayName" : "player",
+        "hp" : 100,
+        "ap" : 1
+    },
     "1" : {
         "displayName" : "몹1",
-        "hp" : 100
+        "hp" : 100,
+        "ap" : 1
     }
 }

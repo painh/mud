@@ -11,6 +11,7 @@ CmdProcessor.prototype.parser = function(socket, data)
 { 
         var msg = striptags(data.message);
         var split = msg.split(' ');
+        var room = g_roomManager.GetById(socket.obj.roomId);
 
         //        io.sockets.in('room' + this.roomId).emit('send:message', msg);
 
@@ -22,7 +23,6 @@ CmdProcessor.prototype.parser = function(socket, data)
 
             }
         } else {
-            var room = g_roomManager.GetById(socket.obj.roomId);
             var obj = room.GetObjByName(split[0]);
             if (obj) {
                 if (split.length >= 2 && split[1] == "쳐") {
@@ -31,7 +31,7 @@ CmdProcessor.prototype.parser = function(socket, data)
                 }
             }
         }
-        sendChat(socket, msg);
+        room.SendChat(socket.obj, msg);
 }
 
 module.exports = function(roomManager, combat)

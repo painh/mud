@@ -20,6 +20,7 @@ var proto_object = require('./json/proto_object');
 
 var g_clients = [];
 
+var objClass = require('./controller/obj');
 var makeTexts = require('./controller/makeTexts');
 var utils = require('./controller/utils.js');
 var roomManager = require('./controller/roomManager.js')(makeTexts, utils, io);
@@ -82,30 +83,14 @@ server.listen(port, function() {
     console.log("open " + port);
 });
 
-
-function makeCursor(socket) {
-    return "[" + socket.obj.hp + "]<br/>";
-}
-
 setInterval(combat.worldTicker, 3000);
-
-function sendChat(socket, msg) {
-    sendMsgToRoom(socket.obj.roomId, socket.obj.displayName + "(이)가 [" + msg + ']라고 말 합니다.</br>');
-}
 
 
 // Socket.io
 io.sockets.on('connection', function(socket) {
-    var user = {
-        displayName: "플레이어" + socket.id,
-        hp: 100,
-        ap: 10,
-        combatTargets: [],
-        roomId: "entry"
-    };
-    socket.obj = user;
+    socket.obj = new objClass('player', 'entry');
     socket.sendMsg = function(msg) {
-        this.emit('send:message', msg + makeCursor(this));
+        this.emit('send:message', msg + this.obj.GetCursor());
     }
 
     utils.RemoveFromList(g_clients, socket);
