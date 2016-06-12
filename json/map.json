@@ -1,12 +1,13 @@
 {
     "entry": {
+        "protoId": "entry", 
         "displayName": "인트로",
         "description": "인트로 설명",
         "proto_objects": [{
-            "protoID": 1
+            "protoId": 1
         }],
         "objects": [{
-            "protoID": 1,
+            "protoId": 1,
             "displayName": "몹1",
             "hp": 100,
             "ap": 5,
