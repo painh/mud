@@ -15,8 +15,8 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var striptags = require('striptags');
 
-var maps = require('./map');
-var proto_object = require('./proto_object');
+var maps = require('./json/map');
+var proto_object = require('./json/proto_object');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
