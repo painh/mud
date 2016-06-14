@@ -24,7 +24,7 @@ var objClass = require('./controller/obj');
 var makeTexts = require('./controller/makeTexts');
 var utils = require('./controller/utils.js');
 var roomManager = require('./controller/roomManager.js')(makeTexts, utils, io);
-var combat = require('./controller/combat.js')(g_clients, makeTexts, roomManager);
+var combat = require('./controller/combat.js')(makeTexts, roomManager);
 var cmdProcessor = require('./controller/cmdProcessor.js')(roomManager, combat);
 
 // view engine setup
@@ -88,7 +88,9 @@ setInterval(combat.worldTicker, 3000);
 
 // Socket.io
 io.sockets.on('connection', function(socket) {
-    socket.obj = new objClass('player', 'entry');
+    var defaultRoomId = 'entry';
+    socket.obj = new objClass('player', defaultRoomId);
+    socket.obj.displayName = 'player'+socket.id;
     socket.sendMsg = function(msg) {
         this.emit('send:message', msg + this.obj.GetCursor());
     }
@@ -96,14 +98,12 @@ io.sockets.on('connection', function(socket) {
     utils.RemoveFromList(g_clients, socket);
     g_clients.push(socket);
 
+    roomManager.Join(defaultRoomId, socket);
+
     socket.on('disconnect', function() {
-        roomManager.Leave(socket);
-        combat.RemoveObj(socket.obj);
-        utils.RemoveFromList(g_clients, socket);
-    });
-    // Join Room
-    socket.on('join:room', function(data) {
-        roomManager.Join(data.roomId, socket);
+        roomManager.Leave(this.obj.roomId, this);
+        combat.RemoveObj(this.obj);
+        utils.RemoveFromList(g_clients, this);
     });
     // Broadcast to room
     socket.on('send:message', function(data) {

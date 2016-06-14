@@ -37,6 +37,7 @@ Room.prototype.Join = function(socket) {
 
 Room.prototype.Leave = function(socket) {
     g_utils.RemoveFromList(this.objects, socket.obj);
+
     socket.leave('room' + this.roomId);
 }
 

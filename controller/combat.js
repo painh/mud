@@ -53,11 +53,10 @@ Combat.prototype.RemoveObj = function(obj) {
 
 }
 
-module.exports = function(clients, makeTexts, roomManager) {
+module.exports = function(makeTexts, roomManager) {
     if (g_combat)
         return g_combat;
 
-    g_clients = clients;
     g_makeTexts = makeTexts;
     g_combat = new Combat();
     g_roomManager = roomManager;
