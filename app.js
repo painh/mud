@@ -98,6 +98,7 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('disconnect', function() {
         roomManager.Leave(socket);
+        combat.RemoveObj(socket.obj);
         utils.RemoveFromList(g_clients, socket);
     });
     // Join Room

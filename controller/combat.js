@@ -1,6 +1,7 @@
 var g_makeTexts;
 var g_combat;
 var g_roomManager;
+var utils = require('./utils');
 
 var Combat = function() {
     this.combatList = [];
@@ -33,18 +34,27 @@ Combat.prototype.Combat = function(src, desc) {
 
     if (desc.combatTargets.indexOf(src) == -1) {
         desc.combatTargets.push(src);
-    } 
+    }
 
-    if(this.combatList.indexOf(desc) == -1)
+    if (this.combatList.indexOf(desc) == -1)
         this.combatList.push(desc);
 
-    if(this.combatList.indexOf(src) == -1)
+    if (this.combatList.indexOf(src) == -1)
         this.combatList.push(src);
 }
 
-module.exports = function(clients, makeTexts, roomManager)
-{
-    if(g_combat)
+Combat.prototype.RemoveObj = function(obj) {
+    for (var i in obj.combatTargets) {
+        var targetObj = obj.combatTargets[i];
+
+        utils.RemoveFromList(targetObj.combatTargets, obj);
+    }
+    utils.RemoveFromList(this.combatList, obj);
+
+}
+
+module.exports = function(clients, makeTexts, roomManager) {
+    if (g_combat)
         return g_combat;
 
     g_clients = clients;
