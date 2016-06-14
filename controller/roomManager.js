@@ -1,13 +1,19 @@
 var maps = require('../json/map');
+var objClass = require('./obj'); 
 var g_makeTexts;
 var g_utils;
 var g_io;
 
 var Room = function(protoData) {
     this.protoData = protoData;
-    //TODO 임시코드
-    this.objects = protoData['objects'];
     this.roomId = protoData.protoId;
+    this.objects = [];
+    for(var i in protoData['proto_objects'])
+    {
+        var protoId = protoData['proto_objects'][i]['protoId'];
+        var obj = new objClass(protoId, this.roomId);
+        this.objects.push(obj);
+    }
 }
 
 Room.prototype.GetObjByName = function(displayName) {
