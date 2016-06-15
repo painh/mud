@@ -91,6 +91,7 @@ io.sockets.on('connection', function(socket) {
     var defaultRoomId = 'entry';
     socket.obj = new objClass('player', defaultRoomId);
     socket.obj.displayName = 'player'+socket.id;
+    socket.obj.socket = socket;
     socket.sendMsg = function(msg) {
         this.emit('send:message', msg + this.obj.GetCursor());
     }

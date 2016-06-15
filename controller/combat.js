@@ -8,6 +8,7 @@ var Combat = function() {
 }
 
 Combat.prototype.attack = function(obj) {
+    obj.Turn();
     var targetList = obj.combatTargets;
     if (targetList.length == 0)
         return;
@@ -17,6 +18,8 @@ Combat.prototype.attack = function(obj) {
 
     var str = g_makeTexts.AttackString(obj.displayName, target.displayName, obj.ap);
     g_roomManager.sendMsgToRoom(target.roomId, str);
+    if(obj.socket)
+        obj.socket.sendMsg('');
 }
 
 Combat.prototype.worldTicker = function() {

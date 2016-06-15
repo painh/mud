@@ -9,10 +9,18 @@ var Obj = function(protoName, roomId) {
     this.roomId = roomId;
     this.maxHp = protoData.hp;
     this.combatTargets = [];
+    this.maxRage = 100;
+    this.rage = 0;
 }
 
 Obj.prototype.GetCursor = function() {
-    return  "["+moment().format('YYYYMMDD hh:mm:ss')+ "] [" + this.hp + "/" + this.maxHp + "]<br/>";
+    return  "["+moment().format('YYYYMMDD hh:mm:ss')+ "] [" + this.hp + "/" + this.maxHp + "] [" + this.rage + "/" + this.maxRage + "]<br/>";
+}
+
+Obj.prototype.Turn = function()
+{
+    this.rage += 10;
+    this.rage = Math.min(this.maxRage, this.rage);
 }
 
 module.exports = Obj;
