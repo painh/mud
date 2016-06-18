@@ -90,6 +90,12 @@ RoomManager.prototype.sendMsgToRoom = function(roomId, msg) {
     room.SendMsg(msg);
 }
 
+RoomManager.prototype.OnObjDead = function(obj) {
+    var room = this.GetById(roomId);
+    if (!room)
+        return;
+}
+
 module.exports = function(makeTexts, utils, io) {
     g_makeTexts = makeTexts;
     g_utils = utils;

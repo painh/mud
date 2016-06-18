@@ -9,17 +9,21 @@ var Combat = function() {
 
 Combat.prototype.attack = function(obj) {
     obj.Turn();
+    if(obj.IsDead())
+        return; 
+
     var targetList = obj.combatTargets;
     if (targetList.length == 0)
         return;
 
     var target = targetList[0];
-    target.hp -= obj.ap;
+    target.hp -= obj.GetAP();
 
     var str = g_makeTexts.AttackString(obj.displayName, target.displayName, obj.ap);
     g_roomManager.sendMsgToRoom(target.roomId, str);
-    if(obj.socket)
+    if (obj.socket)
         obj.socket.sendMsg('');
+
 }
 
 Combat.prototype.worldTicker = function() {
@@ -28,6 +32,23 @@ Combat.prototype.worldTicker = function() {
         var obj = g_combat.combatList[i];
         g_combat.attack(obj);
     }
+
+    var deadList = [];
+    for (var i in g_combat.combatList) {
+        var obj = g_combat.combatList[i];
+        if(obj.IsDead())
+            deadList.push(obj);
+    }
+
+    for(var i in deadList)
+    { 
+        var obj = deadList[i];
+        g_roomManager.OnObjDead(obj);
+        utils.RemoveFromList(this.combatList, deadList[i]);
+    }
+
+
+
 }
 
 Combat.prototype.Combat = function(src, desc) {
@@ -44,6 +65,9 @@ Combat.prototype.Combat = function(src, desc) {
 
     if (this.combatList.indexOf(src) == -1)
         this.combatList.push(src);
+
+    var str = g_makeTexts.CombatStart(src.displayName, desc.displayName);
+    g_roomManager.sendMsgToRoom(src.roomId, str);
 }
 
 Combat.prototype.RemoveObj = function(obj) {

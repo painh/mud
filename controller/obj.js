@@ -23,4 +23,17 @@ Obj.prototype.Turn = function()
     this.rage = Math.min(this.maxRage, this.rage);
 }
 
+Obj.prototype.GetAP = function()
+{
+    return this.ap;
+}
+
+Obj.prototype.IsDead = function()
+{
+    if(this.hp <= 0)
+        return true;
+
+    return false;
+}
+
 module.exports = Obj;

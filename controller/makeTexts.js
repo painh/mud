@@ -1,7 +1,27 @@
 var MakeTexts = function() {}
 
+MakeTexts.prototype.IGA = function(str)
+{
+    return str + "(이)가 ";
+}
+
+MakeTexts.prototype.ULLUL = function(str)
+{
+    return str + "(을)를 ";
+}
+
+MakeTexts.prototype.WAGWA = function(str)
+{
+    return str + "(와)과 ";
+}
+
+MakeTexts.prototype.CombatStart = function(src, desc) {
+    var str = this.WAGWA(src) + desc + " 전투를 시작합니다.";
+    return str;
+}
+
 MakeTexts.prototype.AttackString = function(src, desc, ap) {
-    var str = src + "(이)가 " + desc + "(을)를 공격하였습니다. [-" + ap + "]";
+    var str = this.IGA(src) + this.ULLUL(desc)+" 공격하였습니다. [-" + ap + "]";
     return str;
 }
 
@@ -14,7 +34,7 @@ MakeTexts.prototype.MakeRoomPacket = function(room, socket) {
         if (obj == socket.obj)
             continue;
 
-        description += obj.displayName + "(이)가 서 있습니다." + "<br/>";
+        description += this.IGA(obj.displayName) + " 서 있습니다." + "<br/>";
     }
 
     return description;
@@ -22,7 +42,7 @@ MakeTexts.prototype.MakeRoomPacket = function(room, socket) {
 
 MakeTexts.prototype.Talk = function(who, msg)
 {
-    return who + "(이)가 [" + msg + ']라고 말 합니다.</br>';
+    return this.IGA(who)+ " [" + msg + '] 라고 말 합니다.</br>';
 }
 module.exports = function() {
     console.log('make text constructor!');
