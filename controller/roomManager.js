@@ -1,5 +1,5 @@
 var maps = require('../json/map');
-var objClass = require('./obj'); 
+var objClass = require('./obj');
 var g_makeTexts;
 var g_utils;
 var g_io;
@@ -8,8 +8,7 @@ var Room = function(protoData) {
     this.protoData = protoData;
     this.roomId = protoData.protoId;
     this.objects = [];
-    for(var i in protoData['proto_objects'])
-    {
+    for (var i in protoData['proto_objects']) {
         var protoId = protoData['proto_objects'][i]['protoId'];
         var obj = new objClass(protoId, this.roomId);
         this.objects.push(obj);
@@ -35,8 +34,12 @@ Room.prototype.Join = function(socket) {
     this.objects.push(socket.obj);
 }
 
+Room.prototype.RemoveFromList = function(obj) {
+    g_utils.RemoveFromList(this.objects, obj);
+}
+
 Room.prototype.Leave = function(socket) {
-    g_utils.RemoveFromList(this.objects, socket.obj);
+    this.RemoveFromList(socket.obj);
 
     socket.leave('room' + this.roomId);
 }
@@ -91,9 +94,11 @@ RoomManager.prototype.sendMsgToRoom = function(roomId, msg) {
 }
 
 RoomManager.prototype.OnObjDead = function(obj) {
-    var room = this.GetById(roomId);
+    var room = this.GetById(obj.roomId);
     if (!room)
         return;
+
+    room.RemoveFromList(obj);
 }
 
 module.exports = function(makeTexts, utils, io) {

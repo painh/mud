@@ -28,14 +28,16 @@ Combat.prototype.attack = function(obj) {
 
 Combat.prototype.worldTicker = function() {
     //TODO combatlist를 만들어서 속도 기분으로 소팅하는 식으로 선빵을 만들어야함...
-    for (var i in g_combat.combatList) {
-        var obj = g_combat.combatList[i];
-        g_combat.attack(obj);
+    var self = g_combat;
+
+    for (var i in self.combatList) {
+        var obj = self.combatList[i];
+        self.attack(obj);
     }
 
     var deadList = [];
-    for (var i in g_combat.combatList) {
-        var obj = g_combat.combatList[i];
+    for (var i in self.combatList) {
+        var obj = self.combatList[i];
         if(obj.IsDead())
             deadList.push(obj);
     }
@@ -44,7 +46,7 @@ Combat.prototype.worldTicker = function() {
     { 
         var obj = deadList[i];
         g_roomManager.OnObjDead(obj);
-        utils.RemoveFromList(this.combatList, deadList[i]);
+        utils.RemoveFromList(self.combatList, deadList[i]);
     }
 
 
