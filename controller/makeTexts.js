@@ -54,7 +54,6 @@ MakeTexts.prototype.skillsList = function(title, list)
     for(var i in list)
     {
         var cardId = list[i];
-        console.log(cardId);
         deckList.push(g_cards[cardId].displayName);
     }
     retStr += deckList.join("<br/>") + "<br/>";

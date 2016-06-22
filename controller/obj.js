@@ -46,7 +46,6 @@ Obj.prototype.refreshHands = function() {
         return;
 
     this.hands = this.hands.concat(utils.ArrayRandom(this.deck, HANDS_MAX_CNT - len));
-    console.log(this.hands);
 }
 
 module.exports = Obj;
