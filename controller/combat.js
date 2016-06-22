@@ -9,14 +9,22 @@ var Combat = function() {
 
 Combat.prototype.attack = function(obj) {
     obj.Turn();
-    if(obj.IsDead())
-        return; 
+    if (obj.IsDead())
+        return;
 
     var targetList = obj.combatTargets;
     if (targetList.length == 0)
         return;
 
     var target = targetList[0];
+
+    if (target.IsDead()) {
+        utils.RemoveFromList(targetList, target);
+        return;
+    }
+
+
+
     target.hp -= obj.GetAP();
 
     var str = g_makeTexts.AttackString(obj.displayName, target.displayName, obj.ap);
@@ -38,12 +46,11 @@ Combat.prototype.worldTicker = function() {
     var deadList = [];
     for (var i in self.combatList) {
         var obj = self.combatList[i];
-        if(obj.IsDead())
+        if (obj.IsDead())
             deadList.push(obj);
     }
 
-    for(var i in deadList)
-    { 
+    for (var i in deadList) {
         var obj = deadList[i];
         g_roomManager.OnObjDead(obj);
         utils.RemoveFromList(self.combatList, deadList[i]);

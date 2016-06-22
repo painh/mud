@@ -2,12 +2,12 @@
     "player" : {
         "displayName" : "player",
         "hp" : 100,
-        "ap" : 10,
+        "ap" : 30,
         "protoDeck" : []
     },
     "1" : {
         "displayName" : "몹1",
         "hp" : 100,
-        "ap" : 10
+        "ap" : 30
     }
 }
