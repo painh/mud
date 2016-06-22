@@ -3,11 +3,16 @@
         "displayName" : "player",
         "hp" : 100,
         "ap" : 30,
-        "protoDeck" : []
+        "protoDeck" : ["attack_physical",
+                       "attack_physical",
+                       "attack_physical" ]
     },
     "1" : {
         "displayName" : "몹1",
         "hp" : 100,
-        "ap" : 30
+        "ap" : 30,
+        "protoDeck" : ["attack_physical",
+                       "attack_physical",
+                       "attack_physical" ]
     }
 }

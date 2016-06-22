@@ -1,3 +1,4 @@
+var g_cards = require('../json/proto_card');
 var MakeTexts = function() {}
 
 MakeTexts.prototype.IGA = function(str)
@@ -44,6 +45,31 @@ MakeTexts.prototype.Talk = function(who, msg)
 {
     return this.IGA(who)+ " [" + msg + '] 라고 말 합니다.</br>';
 }
+
+MakeTexts.prototype.skillsList = function(title, list)
+{
+    var retStr = "["+title+"]<br/>";
+    var deckList = [];
+
+    for(var i in list)
+    {
+        var cardId = list[i];
+        console.log(cardId);
+        deckList.push(g_cards[cardId].displayName);
+    }
+    retStr += deckList.join("<br/>") + "<br/>";
+
+    return retStr;
+}
+
+MakeTexts.prototype.Skills = function(obj)
+{ 
+    var deck = this.skillsList("덱", obj.deck);
+    var hands = this.skillsList("핸드", obj.hands);
+
+    return hands + deck;
+}
+
 module.exports = function() {
     console.log('make text constructor!');
     return new MakeTexts();

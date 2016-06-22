@@ -8,7 +8,8 @@ var CmdProcessor = function() {}
 CmdProcessor.prototype.parser = function(socket, data) {
     var msg = striptags(data.message);
     var split = msg.split(' ');
-    var room = g_roomManager.GetById(socket.obj.roomId);
+    var obj = socket.obj;
+    var room = g_roomManager.GetById(obj.roomId);
 
     //        io.sockets.in('room' + this.roomId).emit('send:message', msg);
 
@@ -16,6 +17,12 @@ CmdProcessor.prototype.parser = function(socket, data) {
         switch (split[0]) {
             case '봐':
                 socket.sendMsg(makeTexts.MakeRoomPacket(room, socket));
+                return;
+
+            case '스':
+            case '스킬':
+            case '기술':
+                socket.sendMsg(makeTexts.Skills(obj));
                 return;
 
         }
