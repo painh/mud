@@ -1,5 +1,5 @@
-var moment = require('moment');
 var utils = require('./utils.js');
+var MakeTexts = require('./makeTexts.js');
 
 var HANDS_MAX_CNT = 6;
 
@@ -19,8 +19,12 @@ var Obj = function(protoName, roomId) {
     this.refreshHands();
 }
 
+Obj.prototype.InCombat = function() {
+    return this.combatTargets.length > 0;
+}
+
 Obj.prototype.GetCursor = function() {
-    return "[" + moment().format('YYYYMMDD hh:mm:ss') + "] [" + this.hp + "/" + this.maxHp + "] [" + this.rage + "/" + this.maxRage + "]<br/>";
+    return MakeTexts.Cursor(this);
 }
 
 Obj.prototype.Turn = function() {

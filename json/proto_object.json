@@ -4,15 +4,15 @@
         "hp" : 100,
         "ap" : 30,
         "protoDeck" : ["attack_physical",
-                       "attack_physical",
-                       "attack_physical" ]
+                       "attack_fire",
+                       "attack_frost" ]
     },
     "1" : {
         "displayName" : "몹1",
         "hp" : 100,
         "ap" : 30,
         "protoDeck" : ["attack_physical",
-                       "attack_physical",
-                       "attack_physical" ]
+                       "attack_fire",
+                       "attack_frost" ]
     }
 }
