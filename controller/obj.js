@@ -49,7 +49,8 @@ Obj.prototype.refreshHands = function() {
     if (len >= HANDS_MAX_CNT)
         return;
 
-    this.hands = this.hands.concat(utils.ArrayRandom(this.deck, HANDS_MAX_CNT - len));
+//    this.hands = this.hands.concat(utils.ArrayRandom(this.deck, HANDS_MAX_CNT - len));
+    this.hands = this.hands.concat(utils.ArrayRandom(this.deck, 1));
 }
 
 module.exports = Obj;
