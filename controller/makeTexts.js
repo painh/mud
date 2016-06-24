@@ -2,7 +2,21 @@ var g_cards = require('../json/proto_card');
 var moment = require('moment');
 var MakeTexts = function() {}
 
-var SelectedColor = "#00ff00";
+var COLOR_SELECTED = "#00ff00";
+var COLOR_STRONG = "#ff0000";
+
+var COLOR_RED = "#C41F3B";
+var COLOR_ORANGE = "#FF7D0A";
+var COLOR_GREEN = "#ABD473";
+var COLOR_LIGHT_BLUE = "#69CCF0";
+var COLOR_JADE_GREEN = "#00FF96";
+var COLOR_PINK = "#F58CBA";
+var COLOR_WHITE = "#FFFFFF";
+var COLOR_LIGHT_YELLOW = "#FFF569";
+var COLOR_BLUE = "#0070DE";
+var COLOR_PURPLE = "#9482C9";
+var COLOR_TAN = "#C79C6E";
+
 
 MakeTexts.prototype.ColorTag = function(str, color) {
     return "<font color=" + color + ">" + str + "</font>";
@@ -21,7 +35,7 @@ MakeTexts.prototype.WAGWA = function(str) {
 
 MakeTexts.prototype.CombatStart = function(src, desc) {
     var str = this.WAGWA(src) + desc + " 전투를 시작합니다.";
-    return str;
+    return this.ColorTag(str, COLOR_STRONG);
 }
 
 MakeTexts.prototype.AttackString = function(src, desc, ap) {
@@ -38,7 +52,9 @@ MakeTexts.prototype.MakeRoomPacket = function(room, socket) {
         if (obj == socket.obj)
             continue;
 
-        description += this.IGA(obj.displayName) + " 서 있습니다." + "<br/>";
+        var displayName = this.ColorTag(obj.displayName, COLOR_STRONG);
+
+        description += this.IGA(displayName) + " 서 있습니다." + "<br/>";
     }
 
     return description;
@@ -69,15 +85,22 @@ MakeTexts.prototype.Skills = function(obj) {
 }
 
 MakeTexts.prototype.Cursor = function(obj) {
-    var cur = "[" + moment().format('YYYYMMDD hh:mm:ss') + "] [" + obj.hp + "/" + obj.maxHp + "] [" + obj.rage + "/" + obj.maxRage + "]<br/>";
+    var list = [];
+//    list.push("[" + moment().format('YYYYMMDD hh:mm:ss') + "]");
+    list.push("[" + moment().format('hh:mm:ss') + "]");
+    list.push(this.ColorTag("[" + obj.hp + " / " + obj.maxHp + "]", COLOR_JADE_GREEN));
+    list.push(this.ColorTag("[" + obj.rage + " / " + obj.maxRage + "]", COLOR_LIGHT_BLUE));
+
+    var cur = list.join(" ") + " <br/>";
+
     if (obj.InCombat()) {
         var skills = [];
         for (var i = 0; i < obj.hands.length; ++i) {
             var cardId = obj.hands[i];
             var idx = (i + 1);
-            var str = "[" + idx + " : " + g_cards[cardId].displayName + "]";
+            var str = " [" + idx + ": " + g_cards[cardId].displayName + "] ";
             if (idx == obj.activeSkill)
-                str = this.ColorTag(str, SelectedColor);
+                str = this.ColorTag(str, COLOR_SELECTED);
             skills.push(str);
         }
 
@@ -87,7 +110,7 @@ MakeTexts.prototype.Cursor = function(obj) {
 }
 
 MakeTexts.prototype.UseActiveSkill = function(protoId) {
-    return "[" + g_cards[protoId].displayName + "] 을 다음 턴에 사용합니다.<br/>";
+    return this.ColorTag(" [" + g_cards[protoId].displayName + "] 을 다음 턴에 사용합니다. < br / > ", COLOR_SELECTED);
 }
 
 module.exports = function() {
