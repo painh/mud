@@ -92,8 +92,8 @@ io.sockets.on('connection', function(socket) {
     socket.obj = new objClass('player', defaultRoomId);
     socket.obj.displayName = 'player'+socket.id;
     socket.obj.socket = socket;
-    socket.SendMsg = function(msg) {
-        this.emit('send:message', msg + this.obj.GetCursor());
+    socket.SendMsg = function(msg, showCursor) {
+        this.emit('send:message', msg + (showCursor ? this.obj.GetCursor() : "") );
     }
 
     utils.RemoveFromList(g_clients, socket);

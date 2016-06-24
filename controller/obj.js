@@ -57,11 +57,11 @@ Obj.prototype.refreshHands = function(drawFull) {
         this.hands = this.hands.concat(utils.ArrayRandom(this.deck, 1));
 }
 
-Obj.prototype.SendMsg = function(msg) {
+Obj.prototype.SendMsg = function(msg, showCursor) {
     if(!this.socket)
         return;
 
-    return this.socket.SendMsg(msg);
+    return this.socket.SendMsg(msg, showCursor);
 }
 
 module.exports = Obj;

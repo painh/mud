@@ -114,6 +114,5 @@ MakeTexts.prototype.UseActiveSkill = function(protoId) {
 }
 
 module.exports = function() {
-    console.log('make text constructor!');
     return new MakeTexts();
 }();

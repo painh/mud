@@ -25,13 +25,13 @@ CmdProcessor.prototype.parser = function(socket, data) {
         switch (split[0]) {
             case '봐':
                 socket.SendMsg(makeTexts.MakeRoomPacket(room, socket));
-                return false;
+                return true;
 
             case '스':
             case '스킬':
             case '기술':
                 socket.SendMsg(makeTexts.Skills(obj));
-                return false;
+                return true;
         }
     } else {
         var obj = room.GetObjByName(split[0]);

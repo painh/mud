@@ -29,7 +29,7 @@ Room.prototype.Join = function(socket) {
 
     socket.join('room' + this.roomId);
     socket.obj.roomId = this.roomId;
-    socket.SendMsg(g_makeTexts.MakeRoomPacket(this, socket));
+    socket.SendMsg(g_makeTexts.MakeRoomPacket(this, socket), true);
 
     this.objects.push(socket.obj);
 }
