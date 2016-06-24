@@ -11,4 +11,6 @@ module.exports = {
     CARD_TYPE_PASSIVE: 0,
     CARD_TYPE_ACTIVE: 1,
     CARD_TYPE_INSTANCE: 2,
+
+    ACTIVE_SKILL_NONE: -1,
 };

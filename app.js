@@ -92,7 +92,7 @@ io.sockets.on('connection', function(socket) {
     socket.obj = new objClass('player', defaultRoomId);
     socket.obj.displayName = 'player'+socket.id;
     socket.obj.socket = socket;
-    socket.sendMsg = function(msg) {
+    socket.SendMsg = function(msg) {
         this.emit('send:message', msg + this.obj.GetCursor());
     }
 
@@ -108,6 +108,7 @@ io.sockets.on('connection', function(socket) {
     });
     // Broadcast to room
     socket.on('send:message', function(data) {
-        cmdProcessor.parser(this, data);
+        if(cmdProcessor.parser(this, data)) 
+            this.emit('send:message', this.obj.GetCursor());
     });
 });

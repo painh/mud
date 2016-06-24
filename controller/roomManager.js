@@ -29,7 +29,7 @@ Room.prototype.Join = function(socket) {
 
     socket.join('room' + this.roomId);
     socket.obj.roomId = this.roomId;
-    socket.sendMsg(g_makeTexts.MakeRoomPacket(this, socket));
+    socket.SendMsg(g_makeTexts.MakeRoomPacket(this, socket));
 
     this.objects.push(socket.obj);
 }
@@ -85,7 +85,7 @@ RoomManager.prototype.Leave = function(roomId, socket) {
     room.Leave(socket);
 }
 
-RoomManager.prototype.sendMsgToRoom = function(roomId, msg) {
+RoomManager.prototype.SendMsgToRoom = function(roomId, msg) {
     var room = this.GetById(roomId);
     if (!room)
         return;

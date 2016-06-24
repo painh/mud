@@ -99,7 +99,7 @@ MakeTexts.prototype.Cursor = function(obj) {
             var cardId = obj.hands[i];
             var idx = (i + 1);
             var str = " [" + idx + ": " + g_cards[cardId].displayName + "] ";
-            if (idx == obj.activeSkill)
+            if (i == obj.activeSkill)
                 str = this.ColorTag(str, COLOR_SELECTED);
             skills.push(str);
         }
@@ -110,7 +110,7 @@ MakeTexts.prototype.Cursor = function(obj) {
 }
 
 MakeTexts.prototype.UseActiveSkill = function(protoId) {
-    return this.ColorTag(" [" + g_cards[protoId].displayName + "] 을 다음 턴에 사용합니다. < br / > ", COLOR_SELECTED);
+    return this.ColorTag(" [" + g_cards[protoId].displayName + "] 을 다음 턴에 사용합니다. <br/> ", COLOR_SELECTED);
 }
 
 module.exports = function() {

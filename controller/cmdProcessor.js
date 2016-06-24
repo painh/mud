@@ -17,32 +17,34 @@ CmdProcessor.prototype.parser = function(socket, data) {
     if (split.length == 1) {
         if (obj.InCombat()) {
             if (split[0] >= "1" && split[0] <= constants.HANDS_MAX_CNT) {
-                obj.CombatUserInput(split[0]);
+                g_combat.CombatUserInput(obj, parseInt(split[0]) - 1);
             }
-            return;
+            return true;
         }
 
         switch (split[0]) {
             case '봐':
-                socket.sendMsg(makeTexts.MakeRoomPacket(room, socket));
-                return;
+                socket.SendMsg(makeTexts.MakeRoomPacket(room, socket));
+                return false;
 
             case '스':
             case '스킬':
             case '기술':
-                socket.sendMsg(makeTexts.Skills(obj));
-                return;
+                socket.SendMsg(makeTexts.Skills(obj));
+                return false;
         }
     } else {
         var obj = room.GetObjByName(split[0]);
         if (obj) {
             if (split.length >= 2 && split[1] == "쳐") {
                 g_combat.Combat(socket.obj, obj);
-                return;
+                return true;
             }
         }
     }
     room.SendChat(socket.obj, msg);
+
+    return true;
 }
 
 module.exports = function(roomManager, combat) {

@@ -16,7 +16,7 @@ var Obj = function(protoName, roomId) {
     this.deck = this.protoDeck.slice(0);
     this.hands = [];
 
-    this.activeSkill = null;
+    this.activeSkill = constants.ACTIVE_SKILL_NONE;
 
     this.refreshHands(true);
 }
@@ -58,18 +58,10 @@ Obj.prototype.refreshHands = function(drawFull) {
 }
 
 Obj.prototype.SendMsg = function(msg) {
+    if(!this.socket)
+        return;
+
     return this.socket.SendMsg(msg);
 }
 
-Obj.prototype.CombatUserInput = function(idx) {
-    var len = this.hands.length;
-
-    if (len >= constants.HANDS_MAX_CNT)
-        return;
-
-    var protoId = this.hands[idx];
-    console.log(protoId);
-    this.activeSkill = idx;
-    this.socket.sendMsg(MakeTexts.UseActiveSkill(protoId));
-}
 module.exports = Obj;
