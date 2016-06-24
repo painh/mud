@@ -2,6 +2,11 @@ var g_cards = require('../json/proto_card');
 var moment = require('moment');
 var MakeTexts = function() {}
 
+var SelectedColor = "#00ff00";
+
+MakeTexts.prototype.ColorTag = function(str, color) {
+    return "<font color=" + color + ">" + str + "</font>";
+}
 MakeTexts.prototype.IGA = function(str) {
     return str + "(이)가 ";
 }
@@ -69,12 +74,20 @@ MakeTexts.prototype.Cursor = function(obj) {
         var skills = [];
         for (var i = 0; i < obj.hands.length; ++i) {
             var cardId = obj.hands[i];
-            skills.push("[" + (i + 1) + " : " + g_cards[cardId].displayName + "]");
+            var idx = (i + 1);
+            var str = "[" + idx + " : " + g_cards[cardId].displayName + "]";
+            if (idx == obj.activeSkill)
+                str = this.ColorTag(str, SelectedColor);
+            skills.push(str);
         }
 
         cur += skills.join(" ");
     }
     return cur;
+}
+
+MakeTexts.prototype.UseActiveSkill = function(protoId) {
+    return "[" + g_cards[protoId].displayName + "] 을 다음 턴에 사용합니다.<br/>";
 }
 
 module.exports = function() {

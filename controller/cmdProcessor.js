@@ -1,5 +1,6 @@
 var makeTexts = require('./makeTexts');
 var striptags = require('striptags');
+var constants = require('../json/constants.js');
 var g_roomManager;
 var g_combat;
 
@@ -14,6 +15,13 @@ CmdProcessor.prototype.parser = function(socket, data) {
     //        io.sockets.in('room' + this.roomId).emit('send:message', msg);
 
     if (split.length == 1) {
+        if (obj.InCombat()) {
+            if (split[0] >= "1" && split[0] <= constants.HANDS_MAX_CNT) {
+                obj.CombatUserInput(split[0]);
+            }
+            return;
+        }
+
         switch (split[0]) {
             case '봐':
                 socket.sendMsg(makeTexts.MakeRoomPacket(room, socket));
@@ -24,7 +32,6 @@ CmdProcessor.prototype.parser = function(socket, data) {
             case '기술':
                 socket.sendMsg(makeTexts.Skills(obj));
                 return;
-
         }
     } else {
         var obj = room.GetObjByName(split[0]);

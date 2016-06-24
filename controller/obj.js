@@ -1,7 +1,6 @@
 var utils = require('./utils.js');
 var MakeTexts = require('./makeTexts.js');
-
-var HANDS_MAX_CNT = 6;
+var constants = require('../json/constants.js');
 
 var protoList = require('../json/proto_object.json');
 var Obj = function(protoName, roomId) {
@@ -16,7 +15,10 @@ var Obj = function(protoName, roomId) {
     this.rage = 0;
     this.deck = this.protoDeck.slice(0);
     this.hands = [];
-    this.refreshHands();
+
+    this.activeSkill = null;
+
+    this.refreshHands(true);
 }
 
 Obj.prototype.InCombat = function() {
@@ -43,14 +45,31 @@ Obj.prototype.IsDead = function() {
     return false;
 }
 
-Obj.prototype.refreshHands = function() {
+Obj.prototype.refreshHands = function(drawFull) {
     var len = this.hands.length;
 
-    if (len >= HANDS_MAX_CNT)
+    if (len >= constants.HANDS_MAX_CNT)
         return;
 
-//    this.hands = this.hands.concat(utils.ArrayRandom(this.deck, HANDS_MAX_CNT - len));
-    this.hands = this.hands.concat(utils.ArrayRandom(this.deck, 1));
+    if (drawFull)
+        this.hands = this.hands.concat(utils.ArrayRandom(this.deck, constants.HANDS_MAX_CNT - len));
+    else
+        this.hands = this.hands.concat(utils.ArrayRandom(this.deck, 1));
 }
 
+Obj.prototype.SendMsg = function(msg) {
+    return this.socket.SendMsg(msg);
+}
+
+Obj.prototype.CombatUserInput = function(idx) {
+    var len = this.hands.length;
+
+    if (len >= constants.HANDS_MAX_CNT)
+        return;
+
+    var protoId = this.hands[idx];
+    console.log(protoId);
+    this.activeSkill = idx;
+    this.socket.sendMsg(MakeTexts.UseActiveSkill(protoId));
+}
 module.exports = Obj;
