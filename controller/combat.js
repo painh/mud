@@ -10,21 +10,38 @@ var Combat = function() {
     this.combatList = [];
 }
 
+Combat.prototype.getTarget = function(obj, skill) {
+    var ret = null;
+    switch (skill.target) {
+        case constants.TARGET_SELF:
+            ret = obj;
+            break;
+
+        case constants.TARGET_ORDER_AGGRO:
+            var targetList = obj.combatTargets;
+            if (targetList.length == 0)
+                return null;
+
+            ret = targetList[0];
+
+            if (ret.IsDead()) {
+                utils.RemoveFromList(targetList, ret);
+                return null;
+            }
+            break;
+
+
+    }
+
+    return ret;
+}
+
 Combat.prototype.attack = function(obj) {
-    obj.Turn();
     if (obj.IsDead())
         return;
 
-    var targetList = obj.combatTargets;
-    if (targetList.length == 0)
+    if (!obj.InCombat())
         return;
-
-    var target = targetList[0];
-
-    if (target.IsDead()) {
-        utils.RemoveFromList(targetList, target);
-        return;
-    }
 
     this.rage += 10;
     this.rage = Math.min(this.maxRage, this.rage);
@@ -32,6 +49,11 @@ Combat.prototype.attack = function(obj) {
     var activeSkill = obj.GetActiveSkill();
     obj.UseCard();
     var skill = protoCards[activeSkill];
+
+    var target = this.getTarget(obj, skill);
+    if (!target)
+        return;
+
     var targetResi = target.resistance[skill.attribute];
 
     var targetResistance = targetResi / resistance[obj.lv];
@@ -40,10 +62,13 @@ Combat.prototype.attack = function(obj) {
     var finalDamage = parseInt(ap * (1 - targetResistance));
     target.hp -= finalDamage;
 
-    var str = g_makeTexts.AttackString(obj.displayName, target.displayName, finalDamage, skill);
+    var str = g_makeTexts.AttackString(obj, target, finalDamage, skill);
     g_roomManager.SendMsgToRoom(target.roomId, str);
-    if (obj.socket)
-        obj.socket.SendMsg(''); 
+
+    if (target.IsDead()) {
+        var str = g_makeTexts.TargetDead(target);
+        g_roomManager.SendMsgToRoom(target.roomId, str);
+    }
 }
 
 Combat.prototype.worldTicker = function() {
@@ -60,6 +85,13 @@ Combat.prototype.worldTicker = function() {
         var obj = self.combatList[i];
         if (obj.IsDead())
             deadList.push(obj);
+        else {
+            if (!obj.InCombat())
+                continue;
+            obj.TurnEnd();
+            if (obj.socket) // 전투 메시지 이후 커서 출력용
+                obj.socket.SendMsg('');
+        }
     }
 
     for (var i in deadList) {

@@ -13,4 +13,9 @@ module.exports = {
     CARD_TYPE_INSTANCE: 2,
 
     ACTIVE_SKILL_NONE: -1,
+
+    TARGET_SELF : 0,
+    TARGET_ORDER_AGGRO : 1,
+    TARGET_AOE_ROOM : 2,
+    TARGET_AOE_COMBAT_TARGETS : 3,
 };

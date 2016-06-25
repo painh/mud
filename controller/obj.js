@@ -54,10 +54,9 @@ Obj.prototype.GetCursor = function() {
 
 Obj.prototype.AddRage = function(rage) { 
     this.refreshHands();
-}
+} 
 
-
-Obj.prototype.Turn = function() { 
+Obj.prototype.TurnEnd = function() { 
     this.refreshHands();
 }
 

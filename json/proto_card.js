@@ -8,6 +8,7 @@ module.exports = {
         "rageSpend": 0,
         "rageGain": 0,
         "factor": 1,
+        "target": constants.TARGET_ORDER_AGGRO,
     },
     "attack_physical": {
         "displayName": "물리공격",
@@ -15,7 +16,8 @@ module.exports = {
         "attribute": constants.ATTRIBUTE_TYPE_PHYSICAL,
         "rageSpend": 10,
         "rageGain": 0,
-        "factor": 1,
+        "factor": 1.5,
+        "target": constants.TARGET_ORDER_AGGRO,
     },
     "attack_fire": {
         "displayName": "화염공격",
@@ -23,7 +25,8 @@ module.exports = {
         "attribute": constants.ATTRIBUTE_TYPE_FIRE,
         "rageSpend": 10,
         "rageGain": 0,
-        "factor": 1,
+        "factor": 1.5,
+        "target": constants.TARGET_ORDER_AGGRO,
     },
     "attack_frost": {
         "displayName": "냉기공격",
@@ -31,7 +34,8 @@ module.exports = {
         "attribute": constants.ATTRIBUTE_TYPE_FROST,
         "rageSpend": 10,
         "rageGain": 0,
-        "factor": 1,
+        "factor": 1.5,
+        "target": constants.TARGET_ORDER_AGGRO,
     },
     "attack_nature": {
         "displayName": "자연공격",
@@ -39,7 +43,8 @@ module.exports = {
         "attribute": constants.ATTRIBUTE_TYPE_NATURE,
         "rageSpend": 10,
         "rageGain": 0,
-        "factor": 1,
+        "factor": 1.5,
+        "target": constants.TARGET_ORDER_AGGRO,
     },
     "attack_shadow": {
         "displayName": "암흑공격",
@@ -47,7 +52,8 @@ module.exports = {
         "attribute": constants.ATTRIBUTE_TYPE_SHADOW,
         "rageSpend": 10,
         "rageGain": 0,
-        "factor": 1,
+        "factor": 1.5,
+        "target": constants.TARGET_ORDER_AGGRO,
     },
     "attack_holy": {
         "displayName": "신성공격",
@@ -55,6 +61,16 @@ module.exports = {
         "attribute": constants.ATTRIBUTE_TYPE_HOLY,
         "rageSpend": 10,
         "rageGain": 0,
-        "factor": 1,
+        "factor": 1.5,
+        "target": constants.TARGET_ORDER_AGGRO,
+    },
+    "heal_holy": {
+        "displayName": "신성회복",
+        "type": constants.CARD_TYPE_ACTIVE,
+        "attribute": constants.ATTRIBUTE_TYPE_HOLY,
+        "rageSpend": 10,
+        "rageGain": 0,
+        "factor": 1.5,
+        "target": constants.TARGET_SELF,
     },
 };

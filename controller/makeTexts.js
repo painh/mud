@@ -65,7 +65,7 @@ MakeTexts.prototype.CombatStart = function(src, desc) {
 }
 
 MakeTexts.prototype.AttackString = function(src, desc, ap, skill) {
-    var str = this.IGA(src) + this.ULLUL(desc) + " 공격하였습니다. [" + this.Attribute(skill.attribute) + "] [-" + ap + "]";
+    var str = this.IGA(src.displayName) + this.ULLUL(desc.displayName) + " 공격하였습니다. [" + this.Attribute(skill.attribute) + "] [-" + ap + "] [" + desc.hp + "]";
     return str;
 }
 
@@ -125,6 +125,7 @@ MakeTexts.prototype.Cursor = function(obj) {
             var cardId = obj.hands[i];
             var idx = (i + 1);
             var str = " [" + idx + ": " + g_cards[cardId].displayName + "] ";
+            str = this.ColorTag(str, SKILL_COLOR_TABLE[g_cards[cardId].attribute][1]);
             if (i == obj.activeSkill)
                 str = this.ColorTag(str, COLOR_SELECTED);
             skills.push(str);
@@ -136,7 +137,8 @@ MakeTexts.prototype.Cursor = function(obj) {
 }
 
 MakeTexts.prototype.UseActiveSkill = function(protoId) {
-    return this.ColorTag(" [" + g_cards[protoId].displayName + "] 을 다음 턴에 사용합니다. <br/> ", COLOR_SELECTED);
+    var str = this.ColorTag("[" + g_cards[protoId].displayName + "]", SKILL_COLOR_TABLE[g_cards[protoId].attribute][1]) ;
+    return this.ColorTag( str + "을 다음 턴에 사용합니다. <br/> ", COLOR_SELECTED);
 }
 
 MakeTexts.prototype.CardsPopup = function(popList) {
@@ -151,6 +153,10 @@ MakeTexts.prototype.CardsPopup = function(popList) {
 
     var str = list.join(" ") + "이 사용가능하게 되었습니다.<br/>";
     return str;
+}
+
+MakeTexts.prototype.TargetDead = function(obj) {
+    return  this.IGA(obj.displayName) + " 죽었습니다.";
 }
 
 module.exports = function() {

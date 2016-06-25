@@ -29,7 +29,7 @@ module.exports = {
             "attack_frost"
         ],
         "resistance": {
-            [constants.ATTRIBUTE_TYPE_PHYSICAL]: 500,
+            [constants.ATTRIBUTE_TYPE_PHYSICAL]: 50,
             [constants.ATTRIBUTE_TYPE_FIRE] : 0,
             [constants.ATTRIBUTE_TYPE_FROST] : 0,
             [constants.ATTRIBUTE_TYPE_NATURE] : 0,

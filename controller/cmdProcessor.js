@@ -19,7 +19,7 @@ CmdProcessor.prototype.parser = function(socket, data) {
             if (split[0] >= "1" && split[0] <= constants.HANDS_MAX_CNT) {
                 g_combat.CombatUserInput(obj, parseInt(split[0]) - 1);
             }
-            return true;
+            return false;
         }
 
         switch (split[0]) {
