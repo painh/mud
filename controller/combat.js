@@ -26,6 +26,9 @@ Combat.prototype.attack = function(obj) {
         return;
     }
 
+    this.rage += 10;
+    this.rage = Math.min(this.maxRage, this.rage);
+
     var activeSkill = obj.GetActiveSkill();
     obj.UseCard();
     var skill = protoCards[activeSkill];
@@ -34,14 +37,13 @@ Combat.prototype.attack = function(obj) {
     var targetResistance = targetResi / resistance[obj.lv];
 
     var ap = obj.GetAP() * skill.factor;
-    console.log([ap, targetResistance]);
-    target.hp -= ap * targetResistance;
+    var finalDamage = parseInt(ap * (1 - targetResistance));
+    target.hp -= finalDamage;
 
-    var str = g_makeTexts.AttackString(obj.displayName, target.displayName, obj.ap, skill);
+    var str = g_makeTexts.AttackString(obj.displayName, target.displayName, finalDamage, skill);
     g_roomManager.SendMsgToRoom(target.roomId, str);
     if (obj.socket)
-        obj.socket.SendMsg('');
-
+        obj.socket.SendMsg(''); 
 }
 
 Combat.prototype.worldTicker = function() {
@@ -64,7 +66,7 @@ Combat.prototype.worldTicker = function() {
         var obj = deadList[i];
         g_roomManager.OnObjDead(obj);
         utils.RemoveFromList(self.combatList, deadList[i]);
-    } 
+    }
 }
 
 Combat.prototype.Combat = function(src, desc) {
@@ -83,7 +85,7 @@ Combat.prototype.Combat = function(src, desc) {
         this.combatList.push(src);
 
     var str = g_makeTexts.CombatStart(src.displayName, desc.displayName);
-    g_roomManager.SendMsgToRoom(src.roomId, str); 
+    g_roomManager.SendMsgToRoom(src.roomId, str);
 }
 
 Combat.prototype.RemoveObj = function(obj) {
@@ -97,7 +99,7 @@ Combat.prototype.RemoveObj = function(obj) {
 }
 
 Combat.prototype.CombatUserInput = function(obj, idx) {
-    if(!obj.InCombat()) {
+    if (!obj.InCombat()) {
 
     }
 

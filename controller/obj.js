@@ -2,7 +2,7 @@ var utils = require('./utils.js');
 var MakeTexts = require('./makeTexts.js');
 var constants = require('../json/constants.js');
 
-var protoList = require('../json/proto_object.json');
+var protoList = require('../json/proto_object.js');
 var Obj = function(protoName, roomId) {
     var protoData = protoList[protoName];
 
@@ -52,10 +52,12 @@ Obj.prototype.GetCursor = function() {
     return MakeTexts.Cursor(this);
 }
 
-Obj.prototype.Turn = function() {
-    this.rage += 10;
-    this.rage = Math.min(this.maxRage, this.rage);
+Obj.prototype.AddRage = function(rage) { 
+    this.refreshHands();
+}
 
+
+Obj.prototype.Turn = function() { 
     this.refreshHands();
 }
 
