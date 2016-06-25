@@ -12,6 +12,7 @@ var Obj = function(protoName, roomId) {
     this.maxRage = 100;
     this.rage = 0;
     this.hands = [];
+    this.activeSkillIDX = constants.ACTIVE_SKILL_NONE;
 
     this.resistance = [];
 
@@ -26,16 +27,21 @@ var Obj = function(protoName, roomId) {
         this[i] = protoData[i];
 
     this.deck = this.protoDeck.slice(0);
-    this.activeSkill = constants.ACTIVE_SKILL_NONE;
 
     this.refreshHands();
 }
 
+Obj.prototype.SetActiveSkill = function(idx) {
+    if (idx >= this.hands.length)
+        return;
+    this.activeSkillIDX = idx;
+}
+
 Obj.prototype.GetActiveSkill = function() {
-    if (this.activeSkill == constants.ACTIVE_SKILL_NONE)
+    if (this.activeSkillIDX == constants.ACTIVE_SKILL_NONE)
         return "attack_normal";
 
-    return this.hands[this.activeSkill];
+    return this.hands[this.activeSkillIDX];
 }
 
 Obj.prototype.InCombat = function() {
@@ -80,6 +86,15 @@ Obj.prototype.refreshHands = function(drawFull) {
     this.hands = this.hands.concat(popList);
     this.SendMsg(MakeTexts.CardsPopup(popList), true);
 }
+
+Obj.prototype.UseCard = function() {
+    if (this.activeSkillIDX == constants.ACTIVE_SKILL_NONE)
+        return;
+
+    utils.RemoveFromList(this.hands, this.hands[this.activeSkillIDX]);
+    this.activeSkillIDX = constants.ACTIVE_SKILL_NONE;
+}
+
 
 Obj.prototype.SendMsg = function(msg, showCursor) {
     if (!this.socket)
