@@ -1,3 +1,4 @@
+var constants = require('../json/constants.js');
 var g_cards = require('../json/proto_card');
 var moment = require('moment');
 var MakeTexts = function() {}
@@ -16,11 +17,36 @@ var COLOR_LIGHT_YELLOW = "#FFF569";
 var COLOR_BLUE = "#0070DE";
 var COLOR_PURPLE = "#9482C9";
 var COLOR_TAN = "#C79C6E";
+var COLOR_STRONG_MAGENTA = "#A330C9";
+
+
+var COLOR_POOR = "#FF9D9D9D";
+var COLOR_COMMON = "#FFFFFFFF";
+var COLOR_UNCOMMON = "#FF1EFF00";
+var COLOR_RARE = "#FF0070DD";
+var COLOR_EPIC = "#FFA335EE";
+var COLOR_LEGENDARY = "#FFFF8000";
+var COLOR_ARTIFACT = "#FFE6CC80";
+var COLOR_HEIRLOOM = "#FFE6CC80";
+
+var SKILL_COLOR_TABLE = {};
+
+SKILL_COLOR_TABLE[constants.ATTRIBUTE_TYPE_PHYSICAL] = ["물리", COLOR_WHITE];
+SKILL_COLOR_TABLE[constants.ATTRIBUTE_TYPE_FIRE] = ["화염", COLOR_ORANGE];
+SKILL_COLOR_TABLE[constants.ATTRIBUTE_TYPE_FROST] = ["냉기", COLOR_LIGHT_BLUE];
+SKILL_COLOR_TABLE[constants.ATTRIBUTE_TYPE_NATURE] = ["자연", COLOR_GREEN];
+SKILL_COLOR_TABLE[constants.ATTRIBUTE_TYPE_SHADOW] = ["암흑", COLOR_PURPLE];
+SKILL_COLOR_TABLE[constants.ATTRIBUTE_TYPE_HOLY] = ["신성", COLOR_LIGHT_YELLOW];
 
 
 MakeTexts.prototype.ColorTag = function(str, color) {
     return "<font color=" + color + ">" + str + "</font>";
 }
+
+MakeTexts.prototype.Attribute = function(attr) {
+    return this.ColorTag(SKILL_COLOR_TABLE[attr][0], SKILL_COLOR_TABLE[attr][1]);
+}
+
 MakeTexts.prototype.IGA = function(str) {
     return str + "(이)가 ";
 }
@@ -38,8 +64,8 @@ MakeTexts.prototype.CombatStart = function(src, desc) {
     return this.ColorTag(str, COLOR_STRONG);
 }
 
-MakeTexts.prototype.AttackString = function(src, desc, ap) {
-    var str = this.IGA(src) + this.ULLUL(desc) + " 공격하였습니다. [-" + ap + "]";
+MakeTexts.prototype.AttackString = function(src, desc, ap, skill) {
+    var str = this.IGA(src) + this.ULLUL(desc) + " 공격하였습니다. [" + this.Attribute(skill.attribute) + "] [-" + ap + "]";
     return str;
 }
 
@@ -86,10 +112,10 @@ MakeTexts.prototype.Skills = function(obj) {
 
 MakeTexts.prototype.Cursor = function(obj) {
     var list = [];
-//    list.push("[" + moment().format('YYYYMMDD hh:mm:ss') + "]");
+    //    list.push("[" + moment().format('YYYYMMDD hh:mm:ss') + "]");
     list.push("[" + moment().format('hh:mm:ss') + "]");
-    list.push(this.ColorTag("[" + obj.hp + " / " + obj.maxHp + "]", COLOR_JADE_GREEN));
-    list.push(this.ColorTag("[" + obj.rage + " / " + obj.maxRage + "]", COLOR_LIGHT_BLUE));
+    list.push(this.ColorTag("[" + obj.hp + "]", COLOR_JADE_GREEN));
+    list.push(this.ColorTag("[" + obj.rage + "]", COLOR_LIGHT_BLUE));
 
     var cur = list.join(" ") + " <br/>";
 
@@ -111,6 +137,20 @@ MakeTexts.prototype.Cursor = function(obj) {
 
 MakeTexts.prototype.UseActiveSkill = function(protoId) {
     return this.ColorTag(" [" + g_cards[protoId].displayName + "] 을 다음 턴에 사용합니다. <br/> ", COLOR_SELECTED);
+}
+
+MakeTexts.prototype.CardsPopup = function(popList) {
+    if (popList.length == 0)
+        return '';
+
+    var list = [];
+    for (var i in popList) {
+        var protoId = popList[i];
+        list.push("[" + g_cards[protoId].displayName + "]");
+    }
+
+    var str = list.join(" ") + "이 사용가능하게 되었습니다.<br/>";
+    return str;
 }
 
 module.exports = function() {

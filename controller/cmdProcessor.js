@@ -24,14 +24,14 @@ CmdProcessor.prototype.parser = function(socket, data) {
 
         switch (split[0]) {
             case '봐':
-                socket.SendMsg(makeTexts.MakeRoomPacket(room, socket));
-                return true;
+                socket.SendMsg(makeTexts.MakeRoomPacket(room, socket), true);
+                return false;
 
             case '스':
             case '스킬':
             case '기술':
-                socket.SendMsg(makeTexts.Skills(obj));
-                return true;
+                socket.SendMsg(makeTexts.Skills(obj), true);
+                return false;
         }
     } else {
         var obj = room.GetObjByName(split[0]);

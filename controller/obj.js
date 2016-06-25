@@ -5,20 +5,37 @@ var constants = require('../json/constants.js');
 var protoList = require('../json/proto_object.json');
 var Obj = function(protoName, roomId) {
     var protoData = protoList[protoName];
-    for (var i in protoData)
-        this[i] = protoData[i];
 
     this.roomId = roomId;
     this.maxHp = protoData.hp;
     this.combatTargets = [];
     this.maxRage = 100;
     this.rage = 0;
-    this.deck = this.protoDeck.slice(0);
     this.hands = [];
 
+    this.resistance = [];
+
+    this.resistance[constants.ATTRIBUTE_TYPE_PHYSICAL] = 100;
+    this.resistance[constants.ATTRIBUTE_TYPE_FIRE] = 0;
+    this.resistance[constants.ATTRIBUTE_TYPE_FROST] = 0;
+    this.resistance[constants.ATTRIBUTE_TYPE_NATURE] = 0;
+    this.resistance[constants.ATTRIBUTE_TYPE_SHADOW] = 0;
+    this.resistance[constants.ATTRIBUTE_TYPE_HOLY] = 0;
+
+    for (var i in protoData)
+        this[i] = protoData[i];
+
+    this.deck = this.protoDeck.slice(0);
     this.activeSkill = constants.ACTIVE_SKILL_NONE;
 
-    this.refreshHands(true);
+    this.refreshHands();
+}
+
+Obj.prototype.GetActiveSkill = function() {
+    if (this.activeSkill == constants.ACTIVE_SKILL_NONE)
+        return "attack_normal";
+
+    return this.hands[this.activeSkill];
 }
 
 Obj.prototype.InCombat = function() {
@@ -32,6 +49,8 @@ Obj.prototype.GetCursor = function() {
 Obj.prototype.Turn = function() {
     this.rage += 10;
     this.rage = Math.min(this.maxRage, this.rage);
+
+    this.refreshHands();
 }
 
 Obj.prototype.GetAP = function() {
@@ -51,14 +70,19 @@ Obj.prototype.refreshHands = function(drawFull) {
     if (len >= constants.HANDS_MAX_CNT)
         return;
 
+    var popList = [];
+
     if (drawFull)
-        this.hands = this.hands.concat(utils.ArrayRandom(this.deck, constants.HANDS_MAX_CNT - len));
+        popList = utils.ArrayRandom(this.deck, constants.HANDS_MAX_CNT - len);
     else
-        this.hands = this.hands.concat(utils.ArrayRandom(this.deck, 1));
+        popList = utils.ArrayRandom(this.deck, 1);
+
+    this.hands = this.hands.concat(popList);
+    this.SendMsg(MakeTexts.CardsPopup(popList), true);
 }
 
 Obj.prototype.SendMsg = function(msg, showCursor) {
-    if(!this.socket)
+    if (!this.socket)
         return;
 
     return this.socket.SendMsg(msg, showCursor);

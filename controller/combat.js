@@ -3,6 +3,8 @@ var g_combat;
 var g_roomManager;
 var utils = require('./utils');
 var constants = require('../json/constants.js');
+var resistance = require('../json/resistance.js');
+var protoCards = require('../json/proto_card.js');
 
 var Combat = function() {
     this.combatList = [];
@@ -24,11 +26,16 @@ Combat.prototype.attack = function(obj) {
         return;
     }
 
+    var activeSkill = obj.GetActiveSkill();
+    var skill = protoCards[activeSkill];
+    var targetResi = target.resistance[skill.attribute];
 
+    var targetResistance = targetResistance / resistance[obj.lv];
 
-    target.hp -= obj.GetAP();
+    var ap = obj.GetAP() * skill.factor;
+    target.hp -= ap / targetResistance;
 
-    var str = g_makeTexts.AttackString(obj.displayName, target.displayName, obj.ap);
+    var str = g_makeTexts.AttackString(obj.displayName, target.displayName, obj.ap, skill);
     g_roomManager.SendMsgToRoom(target.roomId, str);
     if (obj.socket)
         obj.socket.SendMsg('');
@@ -102,7 +109,7 @@ Combat.prototype.CombatUserInput = function(obj, idx) {
 
     var protoId = obj.hands[idx];
     obj.activeSkill = idx;
-    obj.SendMsg(g_makeTexts.UseActiveSkill(protoId));
+    obj.SendMsg(g_makeTexts.UseActiveSkill(protoId), false);
 }
 
 module.exports = function(makeTexts, roomManager) {
