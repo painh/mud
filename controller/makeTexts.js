@@ -40,7 +40,7 @@ SKILL_COLOR_TABLE[constants.ATTRIBUTE_TYPE_HOLY] = ["신성", COLOR_LIGHT_YELLOW
 
 
 MakeTexts.prototype.ColorTag = function(str, color) {
-    return "<font color=" + color + ">" + str + "</font>";
+    return `<font color="${color}"> ${str} </font>`;
 }
 
 MakeTexts.prototype.Attribute = function(attr) {
@@ -60,18 +60,17 @@ MakeTexts.prototype.WAGWA = function(str) {
 }
 
 MakeTexts.prototype.CombatStart = function(src, desc) {
-    var str = this.WAGWA(src) + desc + " 전투를 시작합니다.";
+    var str = `${this.WAGWA(src)} ${desc} 전투를 시작합니다.`;
     return this.ColorTag(str, COLOR_STRONG);
 }
 
 MakeTexts.prototype.AttackString = function(src, desc, ap, skill) {
-    var str = this.IGA(src.displayName) + this.ULLUL(desc.displayName) + " 공격하였습니다. [" + this.Attribute(skill.attribute) + "] [-" + ap + "] [" + desc.hp + "]";
+    var str = `${this.IGA(src.displayName)} ${this.ULLUL(desc.displayName)} 공격하였습니다. [${this.Attribute(skill.attribute)}][-${ap}][${desc.hp}]`;
     return str;
 }
 
 MakeTexts.prototype.MakeRoomPacket = function(room, socket) {
-    var description = "=== " + room.protoData.displayName + "===<br/>" +
-        room.protoData.description + "<br/>";
+    var description = `=== ${room.protoData.displayName} ===<br/> ${room.protoData.description} <br/>`;
 
     for (var i in room.objects) {
         var obj = room.objects[i];
@@ -80,18 +79,18 @@ MakeTexts.prototype.MakeRoomPacket = function(room, socket) {
 
         var displayName = this.ColorTag(obj.displayName, COLOR_STRONG);
 
-        description += this.IGA(displayName) + " 서 있습니다." + "<br/>";
+        description += `${this.IGA(displayName)} 서 있습니다. <br/>`;
     }
 
     return description;
 }
 
 MakeTexts.prototype.Talk = function(who, msg) {
-    return this.IGA(who) + " [" + msg + '] 라고 말 합니다.</br>';
+    return `${this.IGA(who)} [${msg}] 라고 말 합니다.</br>`;
 }
 
 MakeTexts.prototype.skillsList = function(title, list) {
-    var retStr = "[" + title + "]<br/>";
+    var retStr = `[${title}]<br/>`;
     var deckList = [];
 
     for (var i in list) {
@@ -113,9 +112,9 @@ MakeTexts.prototype.Skills = function(obj) {
 MakeTexts.prototype.Cursor = function(obj) {
     var list = [];
     //    list.push("[" + moment().format('YYYYMMDD hh:mm:ss') + "]");
-    list.push("[" + moment().format('hh:mm:ss') + "]");
-    list.push(this.ColorTag("[" + obj.hp + "]", COLOR_JADE_GREEN));
-    list.push(this.ColorTag("[" + obj.rage + "]", COLOR_LIGHT_BLUE));
+    list.push(`[${moment().format('hh:mm:ss')}]`);
+    list.push(this.ColorTag(`[${obj.hp}]`, COLOR_JADE_GREEN));
+    list.push(this.ColorTag(`[${obj.rage}]`, COLOR_LIGHT_BLUE));
 
     var cur = list.join(" ") + " <br/>";
 
@@ -124,7 +123,7 @@ MakeTexts.prototype.Cursor = function(obj) {
         for (var i = 0; i < obj.hands.length; ++i) {
             var cardId = obj.hands[i];
             var idx = (i + 1);
-            var str = " [" + idx + ": " + g_cards[cardId].displayName + "] ";
+            var str = `[${idx}: ${g_cards[cardId].displayName}] `;
             str = this.ColorTag(str, SKILL_COLOR_TABLE[g_cards[cardId].attribute][1]);
             if (i == obj.activeSkill)
                 str = this.ColorTag(str, COLOR_SELECTED);
@@ -137,8 +136,8 @@ MakeTexts.prototype.Cursor = function(obj) {
 }
 
 MakeTexts.prototype.UseActiveSkill = function(protoId) {
-    var str = this.ColorTag("[" + g_cards[protoId].displayName + "]", SKILL_COLOR_TABLE[g_cards[protoId].attribute][1]) ;
-    return this.ColorTag( str + "을 다음 턴에 사용합니다. <br/> ", COLOR_SELECTED);
+    var str = this.ColorTag(`[${g_cards[protoId].displayName}]`, SKILL_COLOR_TABLE[g_cards[protoId].attribute][1]) ;
+    return this.ColorTag( `${str}을 다음 턴에 사용합니다.<br/>`, COLOR_SELECTED);
 }
 
 MakeTexts.prototype.CardsPopup = function(popList) {
@@ -148,7 +147,7 @@ MakeTexts.prototype.CardsPopup = function(popList) {
     var list = [];
     for (var i in popList) {
         var protoId = popList[i];
-        list.push("[" + g_cards[protoId].displayName + "]");
+        list.push(`[${g_cards[protoId].displayName}]`);
     }
 
     var str = list.join(" ") + "이 사용가능하게 되었습니다.<br/>";
@@ -156,7 +155,7 @@ MakeTexts.prototype.CardsPopup = function(popList) {
 }
 
 MakeTexts.prototype.TargetDead = function(obj) {
-    return  this.IGA(obj.displayName) + " 죽었습니다.";
+    return  `${this.IGA(obj.displayName)} 죽었습니다.`;
 }
 
 module.exports = function() {
