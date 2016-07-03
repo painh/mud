@@ -15,7 +15,7 @@ Utils.ArrayRandom = function(list, n) {
         n = 1;
 
     for (var i = 0; i < n; ++i) {
-        if(list.length == 0)
+        if (list.length == 0)
             break;
         var ri = Math.floor(Math.random() * list.length);
         var rs = list.splice(ri, 1)[0];
@@ -23,6 +23,18 @@ Utils.ArrayRandom = function(list, n) {
     }
 
     return ret;
+}
+
+Utils.ArraySet = function(list, obj) {
+    if (list.indexOf(obj) != -1)
+        return;
+
+    list.push(obj);
+}
+
+Utils.NowSec = function() {
+    var ts = new Date().getTime();
+    return Math.floor(ts / 1000);
 }
 
 

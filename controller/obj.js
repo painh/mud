@@ -6,6 +6,7 @@ var protoList = require('../json/proto_object.js');
 var Obj = function(protoName, roomId) {
     var protoData = protoList[protoName];
 
+    this.protoId = protoName;
     this.roomId = roomId;
     this.maxHp = protoData.hp;
     this.combatTargets = [];

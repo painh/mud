@@ -158,6 +158,10 @@ MakeTexts.prototype.TargetDead = function(obj) {
     return  `${this.IGA(obj.displayName)} 죽었습니다.`;
 }
 
+MakeTexts.prototype.Spawn = function(obj) {
+    return  `${this.IGA(obj.displayName)} 나타났습니다.`;
+}
+
 module.exports = function() {
     return new MakeTexts();
 }();

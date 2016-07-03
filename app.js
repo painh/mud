@@ -83,17 +83,20 @@ server.listen(port, function() {
     console.log("open " + port);
 });
 
-setInterval(combat.worldTicker, 3000);
+setInterval(function() {
+    combat.worldTicker();
+    roomManager.worldTicker();
+}, 3000);
 
 
 // Socket.io
 io.sockets.on('connection', function(socket) {
     var defaultRoomId = 'entry';
     socket.obj = new objClass('player', defaultRoomId);
-    socket.obj.displayName = 'player'+socket.id;
+    socket.obj.displayName = 'player' + socket.id;
     socket.obj.socket = socket;
     socket.SendMsg = function(msg, showCursor) {
-        this.emit('send:message', msg + (showCursor ? this.obj.GetCursor() : "") );
+        this.emit('send:message', msg + (showCursor ? this.obj.GetCursor() : ""));
     }
 
     utils.RemoveFromList(g_clients, socket);
@@ -108,7 +111,7 @@ io.sockets.on('connection', function(socket) {
     });
     // Broadcast to room
     socket.on('send:message', function(data) {
-        if(cmdProcessor.parser(this, data)) 
+        if (cmdProcessor.parser(this, data))
             this.emit('send:message', this.obj.GetCursor());
     });
 });

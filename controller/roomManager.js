@@ -8,11 +8,20 @@ var Room = function(protoData) {
     this.protoData = protoData;
     this.roomId = protoData.protoId;
     this.objects = [];
+    this.removedList = [];
+
     for (var i in protoData['proto_objects']) {
         var protoId = protoData['proto_objects'][i]['protoId'];
-        var obj = new objClass(protoId, this.roomId);
-        this.objects.push(obj);
+        this.Spawn(protoId);
     }
+}
+
+Room.prototype.Spawn = function(protoId) {
+    var obj = new objClass(protoId, this.roomId);
+    this.objects.push(obj);
+
+    this.SendMsg(g_makeTexts.Spawn(obj));
+    return obj;
 }
 
 Room.prototype.GetObjByName = function(displayName) {
@@ -36,6 +45,18 @@ Room.prototype.Join = function(socket) {
 
 Room.prototype.RemoveFromList = function(obj) {
     g_utils.RemoveFromList(this.objects, obj);
+
+
+    var now = g_utils.NowSec();
+
+    if (!(obj.protoId in this.protoData.proto_objects)) {
+        return;
+    }
+
+    this.removedList.push({
+        protoId: obj.protoId,
+        removedTS: now
+    });
 }
 
 Room.prototype.Leave = function(socket) {
@@ -52,11 +73,35 @@ Room.prototype.SendChat = function(obj, msg) {
     this.SendMsg(g_makeTexts.Talk(obj.displayName, msg));
 }
 
+Room.prototype.Update = function() {
+    return false;
+}
+
+Room.prototype.UpdateDone = function(now) {
+    var removeList = [];
+
+    for (var obj of this.removedList) {
+        //        console.log(obj);
+        //        console.log(this.protoData.proto_objects);
+        if (now - obj.removedTS > this.protoData.proto_objects[obj.protoId].respawnSec) {
+            this.Spawn(obj.protoId);
+            removeList.push(obj);
+        }
+    }
+
+    for (var obj of removeList)
+        g_utils.RemoveFromList(this.removedList, obj);
+
+    return this.removedList.length == 0;
+}
+
 var RoomManager = function() {
     this.list = {};
     for (var i in maps) {
         this.list[maps[i].protoId] = new Room(maps[i]);
     }
+
+    this.updateList = [];
 }
 
 RoomManager.prototype.GetById = function(roomId) {
@@ -99,6 +144,21 @@ RoomManager.prototype.OnObjDead = function(obj) {
         return;
 
     room.RemoveFromList(obj);
+    g_utils.ArraySet(this.updateList, room);
+}
+
+RoomManager.prototype.worldTicker = function() {
+    var removeList = [];
+    var now = g_utils.NowSec();
+
+    for (var room of this.updateList) {
+        room.Update(now);
+        if (room.UpdateDone(now))
+            removeList.push(room);
+    }
+
+    for (var room of removeList)
+        g_utils.RemoveFromList(this.updateList, room);
 }
 
 module.exports = function(makeTexts, utils, io) {
