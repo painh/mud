@@ -1,0 +1,16 @@
+<link rel="stylesheet" href="/stylesheets/style.css">
+
+<div id='wrapper'>
+    <div id='content'>
+        <div id='log'></div>
+    </div>
+    <div id='chat'><input type='text' id='message'/></div>
+</div>
+
+<script>
+    var local_data = {hostname: "{{hostname}}" };
+</script>
+
+<script src='http://code.jquery.com/jquery-1.10.1.min.js'></script>
+<script src='/socket.io/socket.io.js'></script>
+<script src='/javascripts/chat.js'></script>

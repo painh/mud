@@ -1,7 +1,8 @@
 var constants = require('../json/constants.js');
 var g_cards = require('../json/proto_card');
 var moment = require('moment');
-var MakeTexts = function() {}
+var MakeTexts = function () {
+}
 
 var COLOR_SELECTED = "#00ff00";
 var COLOR_STRONG = "#ff0000";
@@ -39,37 +40,37 @@ SKILL_COLOR_TABLE[constants.ATTRIBUTE_TYPE_SHADOW] = ["암흑", COLOR_PURPLE];
 SKILL_COLOR_TABLE[constants.ATTRIBUTE_TYPE_HOLY] = ["신성", COLOR_LIGHT_YELLOW];
 
 
-MakeTexts.prototype.ColorTag = function(str, color) {
+MakeTexts.prototype.ColorTag = function (str, color) {
     return `<font color="${color}"> ${str} </font>`;
 }
 
-MakeTexts.prototype.Attribute = function(attr) {
+MakeTexts.prototype.Attribute = function (attr) {
     return this.ColorTag(SKILL_COLOR_TABLE[attr][0], SKILL_COLOR_TABLE[attr][1]);
 }
 
-MakeTexts.prototype.IGA = function(str) {
+MakeTexts.prototype.IGA = function (str) {
     return str + "(이)가 ";
 }
 
-MakeTexts.prototype.ULLUL = function(str) {
+MakeTexts.prototype.ULLUL = function (str) {
     return str + "(을)를 ";
 }
 
-MakeTexts.prototype.WAGWA = function(str) {
+MakeTexts.prototype.WAGWA = function (str) {
     return str + "(와)과 ";
 }
 
-MakeTexts.prototype.CombatStart = function(src, desc) {
+MakeTexts.prototype.CombatStart = function (src, desc) {
     var str = `${this.WAGWA(src)} ${desc} 전투를 시작합니다.`;
     return this.ColorTag(str, COLOR_STRONG);
 }
 
-MakeTexts.prototype.AttackString = function(src, desc, ap, skill) {
+MakeTexts.prototype.AttackString = function (src, desc, ap, skill) {
     var str = `${this.IGA(src.displayName)} ${this.ULLUL(desc.displayName)} 공격하였습니다. [${this.Attribute(skill.attribute)}][-${ap}][${desc.hp}]`;
     return str;
 }
 
-MakeTexts.prototype.MakeRoomPacket = function(room, socket) {
+MakeTexts.prototype.MakeRoomPacket = function (room, socket) {
     var description = `=== ${room.protoData.displayName} ===<br/> ${room.protoData.description} <br/>`;
 
     for (var i in room.objects) {
@@ -85,11 +86,11 @@ MakeTexts.prototype.MakeRoomPacket = function(room, socket) {
     return description;
 }
 
-MakeTexts.prototype.Talk = function(who, msg) {
+MakeTexts.prototype.Talk = function (who, msg) {
     return `${this.IGA(who)} [${msg}] 라고 말 합니다.</br>`;
 }
 
-MakeTexts.prototype.skillsList = function(title, list) {
+MakeTexts.prototype.skillsList = function (title, list) {
     var retStr = `[${title}]<br/>`;
     var deckList = [];
 
@@ -102,14 +103,14 @@ MakeTexts.prototype.skillsList = function(title, list) {
     return retStr;
 }
 
-MakeTexts.prototype.Skills = function(obj) {
+MakeTexts.prototype.Skills = function (obj) {
     var deck = this.skillsList("덱", obj.deck);
     var hands = this.skillsList("핸드", obj.hands);
 
     return hands + deck;
 }
 
-MakeTexts.prototype.Cursor = function(obj) {
+MakeTexts.prototype.Cursor = function (obj) {
     var list = [];
     //    list.push("[" + moment().format('YYYYMMDD hh:mm:ss') + "]");
     list.push(`[${moment().format('hh:mm:ss')}]`);
@@ -135,12 +136,12 @@ MakeTexts.prototype.Cursor = function(obj) {
     return cur;
 }
 
-MakeTexts.prototype.UseActiveSkill = function(protoId) {
-    var str = this.ColorTag(`[${g_cards[protoId].displayName}]`, SKILL_COLOR_TABLE[g_cards[protoId].attribute][1]) ;
-    return this.ColorTag( `${str}을 다음 턴에 사용합니다.<br/>`, COLOR_SELECTED);
+MakeTexts.prototype.UseActiveSkill = function (protoId) {
+    var str = this.ColorTag(`[${g_cards[protoId].displayName}]`, SKILL_COLOR_TABLE[g_cards[protoId].attribute][1]);
+    return this.ColorTag(`${str}을 다음 턴에 사용합니다.<br/>`, COLOR_SELECTED);
 }
 
-MakeTexts.prototype.CardsPopup = function(popList) {
+MakeTexts.prototype.CardsPopup = function (popList) {
     if (popList.length == 0)
         return '';
 
@@ -154,14 +155,14 @@ MakeTexts.prototype.CardsPopup = function(popList) {
     return str;
 }
 
-MakeTexts.prototype.TargetDead = function(obj) {
-    return  `${this.IGA(obj.displayName)} 죽었습니다.`;
+MakeTexts.prototype.TargetDead = function (obj) {
+    return `${this.IGA(obj.displayName)} 죽었습니다.`;
 }
 
-MakeTexts.prototype.Spawn = function(obj) {
-    return  `${this.IGA(obj.displayName)} 나타났습니다.`;
+MakeTexts.prototype.Spawn = function (obj) {
+    return `${this.IGA(obj.displayName)} 나타났습니다.`;
 }
 
-module.exports = function() {
+module.exports = function () {
     return new MakeTexts();
 }();

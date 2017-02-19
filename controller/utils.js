@@ -6,7 +6,7 @@ Utils.RemoveFromList = function(list, obj) {
         return;
 
     list.splice(idx, 1);
-}
+};
 
 Utils.ArrayRandom = function(list, n) {
     var ret = [];
@@ -23,19 +23,19 @@ Utils.ArrayRandom = function(list, n) {
     }
 
     return ret;
-}
+};
 
 Utils.ArraySet = function(list, obj) {
     if (list.indexOf(obj) != -1)
         return;
 
     list.push(obj);
-}
+};
 
 Utils.NowSec = function() {
     var ts = new Date().getTime();
     return Math.floor(ts / 1000);
-}
+};
 
 
 module.exports = Utils;

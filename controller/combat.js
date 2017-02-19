@@ -153,4 +153,4 @@ module.exports = function(makeTexts, roomManager) {
     g_combat = new Combat();
     g_roomManager = roomManager;
     return g_combat;
-}
+};

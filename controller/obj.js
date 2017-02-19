@@ -3,7 +3,7 @@ var MakeTexts = require('./makeTexts.js');
 var constants = require('../json/constants.js');
 
 var protoList = require('../json/proto_object.js');
-var Obj = function(protoName, roomId) {
+var Obj = function (protoName, roomId) {
     var protoData = protoList[protoName];
 
     this.protoId = protoName;
@@ -30,49 +30,49 @@ var Obj = function(protoName, roomId) {
     this.deck = this.protoDeck.slice(0);
 
     this.refreshHands();
-}
+};
 
-Obj.prototype.SetActiveSkill = function(idx) {
+Obj.prototype.SetActiveSkill = function (idx) {
     if (idx >= this.hands.length)
         return;
     this.activeSkillIDX = idx;
-}
+};
 
-Obj.prototype.GetActiveSkill = function() {
+Obj.prototype.GetActiveSkill = function () {
     if (this.activeSkillIDX == constants.ACTIVE_SKILL_NONE)
         return "attack_normal";
 
     return this.hands[this.activeSkillIDX];
-}
+};
 
-Obj.prototype.InCombat = function() {
+Obj.prototype.InCombat = function () {
     return this.combatTargets.length > 0;
-}
+};
 
-Obj.prototype.GetCursor = function() {
+Obj.prototype.GetCursor = function () {
     return MakeTexts.Cursor(this);
-}
+};
 
-Obj.prototype.AddRage = function(rage) { 
+Obj.prototype.AddRage = function (rage) {
     this.refreshHands();
-} 
+};
 
-Obj.prototype.TurnEnd = function() { 
+Obj.prototype.TurnEnd = function () {
     this.refreshHands();
-}
+};
 
-Obj.prototype.GetAP = function() {
+Obj.prototype.GetAP = function () {
     return this.ap;
-}
+};
 
-Obj.prototype.IsDead = function() {
+Obj.prototype.IsDead = function () {
     if (this.hp <= 0)
         return true;
 
     return false;
-}
+};
 
-Obj.prototype.refreshHands = function(drawFull) {
+Obj.prototype.refreshHands = function (drawFull) {
     var len = this.hands.length;
 
     if (len >= constants.HANDS_MAX_CNT)
@@ -87,22 +87,30 @@ Obj.prototype.refreshHands = function(drawFull) {
 
     this.hands = this.hands.concat(popList);
     this.SendMsg(MakeTexts.CardsPopup(popList), true);
-}
+};
 
-Obj.prototype.UseCard = function() {
+Obj.prototype.UseCard = function () {
     if (this.activeSkillIDX == constants.ACTIVE_SKILL_NONE)
         return;
 
     utils.RemoveFromList(this.hands, this.hands[this.activeSkillIDX]);
     this.activeSkillIDX = constants.ACTIVE_SKILL_NONE;
-}
+};
 
 
-Obj.prototype.SendMsg = function(msg, showCursor) {
+Obj.prototype.SendMsg = function (msg, showCursor) {
     if (!this.socket)
         return;
 
     return this.socket.SendMsg(msg, showCursor);
-}
+};
+
+Obj.prototype.GetRoomId = function () {
+    return this.roomId;
+};
+
+Obj.prototype.SetRoomId = function (roomId) {
+    this.roomId = roomId;
+};
 
 module.exports = Obj;

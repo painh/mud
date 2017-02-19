@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
     // Socket.io connection
     var hostname = local_data.hostname;
     var socket = io.connect(hostname),
@@ -10,7 +10,7 @@ $(function() {
         });
     }
 
-    socket.on('connect', function() {
+    socket.on('connect', function () {
         join('entry');
     });
 
@@ -25,13 +25,13 @@ $(function() {
         scroll();
     }
 
-    socket.on('send:message', function(data) {
+    socket.on('send:message', function (data) {
         print(data);
     });
 
     $("#message").focus();
 
-    $("#message").keyup(function(event) {
+    $("#message").keyup(function (event) {
         if (event.keyCode != 13)
             return;
 
@@ -46,7 +46,7 @@ $(function() {
         });
     });
 
-    $('body').resize(function() {
+    $('body').resize(function () {
         scroll();
     });
 

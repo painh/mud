@@ -37,4 +37,4 @@ module.exports = {
             [constants.ATTRIBUTE_TYPE_HOLY] : 0,
         }
     }
-}
+};

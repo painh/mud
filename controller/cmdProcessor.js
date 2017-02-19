@@ -4,12 +4,14 @@ var constants = require('../json/constants.js');
 var g_roomManager;
 var g_combat;
 
-var CmdProcessor = function() {}
+var CmdProcessor = function () {
+};
 
-CmdProcessor.prototype.parser = function(socket, data) {
+CmdProcessor.prototype.processNormalInput = function (socket, data) {
     var msg = striptags(data.message);
     var split = msg.split(' ');
-    var obj = socket.obj;
+    var obj = socket.user.GetObj();
+
     var room = g_roomManager.GetById(obj.roomId);
 
     //        io.sockets.in('room' + this.roomId).emit('send:message', msg);
@@ -34,21 +36,29 @@ CmdProcessor.prototype.parser = function(socket, data) {
                 return false;
         }
     } else {
-        var obj = room.GetObjByName(split[0]);
-        if (obj) {
+        var roomObj = room.GetObjByName(split[0]);
+        if (roomObj) {
             if (split.length >= 2 && split[1] == "쳐") {
-                g_combat.Combat(socket.obj, obj);
+                g_combat.Combat(socket.obj, roomObj);
                 return true;
             }
         }
     }
-    room.SendChat(socket.obj, msg);
+    room.SendChat(socket.user.GetObj(), msg);
+};
+
+CmdProcessor.prototype.parser = function (socket, data) {
+    switch(socket.user.GetInputState())
+    {
+        case constants.INPUT_STATE_NORMAL:
+            return this.processNormalInput(socket, data);
+    }
 
     return true;
-}
+};
 
-module.exports = function(roomManager, combat) {
+module.exports = function (roomManager, combat) {
     g_roomManager = roomManager;
     g_combat = combat;
     return new CmdProcessor();
-}
+};

@@ -1,12 +1,13 @@
 "use strict";
 var express = require('express');
+var exphbs = require('express-handlebars');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
-var routes = require('./routes/index');
+var passport = require('passport');
+var session = require('express-session');
+var levelup = require('level');
 
 var app = express();
 var server = require('http').Server(app);
@@ -20,31 +21,36 @@ var proto_card = require('./json/proto_card');
 
 var g_clients = [];
 
-var objClass = require('./controller/obj');
+
 var makeTexts = require('./controller/makeTexts');
 var utils = require('./controller/utils.js');
 var roomManager = require('./controller/roomManager.js')(makeTexts, utils, io);
 var combat = require('./controller/combat.js')(makeTexts, roomManager);
 var cmdProcessor = require('./controller/cmdProcessor.js')(roomManager, combat);
+var userClass = require('./controller/user')(roomManager);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: false
-}));
-app.use(cookieParser());
+app.use(bodyParser.urlencoded({extended: false}));
+
+var sessionProto = session({resave: true, saveUninitialized: true, secret: 'sadfsadfuwotm8'});
+app.use(sessionProto);
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
+var routes = require('./routes/index');
 app.use('/', routes);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
@@ -55,7 +61,7 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
+    app.use(function (err, req, res, next) {
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,
@@ -66,7 +72,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,
@@ -74,44 +80,72 @@ app.use(function(err, req, res, next) {
     });
 });
 
-
 module.exports = app;
 
-var port = app.get('port') || 10332;
+var port = app.get('port') || 3000;
 
-server.listen(port, function() {
+server.listen(port, function () {
     console.log("open " + port);
 });
 
-setInterval(function() {
+setInterval(function () {
     combat.worldTicker();
     roomManager.worldTicker();
 }, 3000);
 
+io.use(function (socket, next) {
+    sessionProto(socket.request, {}, next);
+    // if (!socket.request.hasOwnProperty('session')) {
+    //     next(new Error("Token unknown"));
+    //     socket.disconnect();
+    // }
+});
 
 // Socket.io
-io.sockets.on('connection', function(socket) {
-    var defaultRoomId = 'entry';
-    socket.obj = new objClass('player', defaultRoomId);
-    socket.obj.displayName = 'player' + socket.id;
-    socket.obj.socket = socket;
-    socket.SendMsg = function(msg, showCursor) {
-        this.emit('send:message', msg + (showCursor ? this.obj.GetCursor() : ""));
+io.sockets.on('connection', function (socket) {
+
+    if (typeof socket.request.session == 'undefined' ||
+        typeof socket.request.session.passport == 'undefined' ||
+        typeof socket.request.session.passport.user == 'undefined') {
+        socket.disconnect();
+        return;
     }
+
+    socket.SendMsg = function (msg, showCursor) {
+        this.emit('send:message', msg + (showCursor ? this.user.GetCursor() : ""));
+    };
+
+    socket.user = new userClass(socket);
+    roomManager.Join(socket.user.GetRoomId(), socket);
 
     utils.RemoveFromList(g_clients, socket);
     g_clients.push(socket);
 
-    roomManager.Join(defaultRoomId, socket);
-
-    socket.on('disconnect', function() {
-        roomManager.Leave(this.obj.roomId, this);
-        combat.RemoveObj(this.obj);
+    socket.on('disconnect', function () {
+        roomManager.Leave(this.user.GetRoomId(), this);
+        combat.RemoveObj(this.user);
         utils.RemoveFromList(g_clients, this);
     });
     // Broadcast to room
-    socket.on('send:message', function(data) {
+    socket.on('send:message', function (data) {
         if (cmdProcessor.parser(this, data))
-            this.emit('send:message', this.obj.GetCursor());
+            this.emit('send:message', this.user.GetCursor());
     });
 });
+
+// 1) Create our database, supply location and options.
+//    This will create or open the underlying LevelDB store.
+var db = levelup('./db/db')
+
+// 2) put a key & value
+db.put('name', 'LevelUP', function (err) {
+    if (err) return console.log('Ooops!', err) // some kind of I/O error
+
+    // 3) fetch by key
+    db.get('name', function (err, value) {
+        if (err) return console.log('Ooops!', err) // likely the key was not found
+
+        // ta da!
+        console.log('name=' + value)
+    })
+})
