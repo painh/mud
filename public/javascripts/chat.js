@@ -1,3 +1,6 @@
+var g_textHistory = [];
+var g_textHistoryIndex = 0;
+
 $(function () {
     // Socket.io connection
     var hostname = local_data.hostname;
@@ -32,6 +35,20 @@ $(function () {
     $("#message").focus();
 
     $("#message").keyup(function (event) {
+        if (event.which == 38) {
+            if (g_textHistoryIndex > 0)
+                g_textHistoryIndex--;
+
+            $("#message").val(g_textHistory[g_textHistoryIndex]);
+        }
+
+        if (event.which == 40) {
+            if (g_textHistoryIndex < g_textHistory.length)
+                g_textHistoryIndex++;
+
+            $("#message").val(g_textHistory[g_textHistoryIndex]);
+        }
+
         if (event.keyCode != 13)
             return;
 
@@ -44,6 +61,9 @@ $(function () {
             roomId: roomId,
             message: msg
         });
+
+        g_textHistory.push(msg);
+        g_textHistoryIndex = g_textHistory.length - 1;
     });
 
     $('body').resize(function () {
@@ -53,6 +73,4 @@ $(function () {
 
     for (var i = 0; i < 100; ++i)
         print('<br/>');
-
-
 });

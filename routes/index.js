@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport')
-    , FacebookStrategy = require('passport-facebook').Strategy;
+    , FacebookStrategy = require('passport-facebook').Strategy
+    , LocalStrategy = require('passport-local').Strategy;
+
 
 // serialize
 // 인증후 사용자 정보를 세션에 저장
@@ -28,6 +30,19 @@ passport.use(new FacebookStrategy({
         done(null, profile);
     }
 ));
+
+passport.use(new LocalStrategy(function (username, password, done) {
+        // if (err) { return done(err); }
+        // if (!user) { return done(null, false); }
+        // if (!user.verifyPassword(password)) { return done(null, false); }
+        var user = {id: "1234", ext: "sdfasdfsdf"};
+        return done(null, user);
+    }
+));
+
+router.get('/auth/local', passport.authenticate('local'), function (req, res) {
+    res.redirect('/mud/');
+});
 
 router.get('/auth/facebook', passport.authenticate('facebook'));
 router.get('/auth/facebook/callback',
@@ -65,7 +80,7 @@ router.get('/mud/', function (req, res, next) {
         return;
     }
 
-    res.render('mud', {title: 'mud', hostname: req.headers.host } );
+    res.render('mud', {title: 'mud', hostname: req.headers.host});
 });
 
 module.exports = router;

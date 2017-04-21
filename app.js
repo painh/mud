@@ -7,7 +7,6 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var passport = require('passport');
 var session = require('express-session');
-var levelup = require('level');
 
 var app = express();
 var server = require('http').Server(app);
@@ -22,12 +21,13 @@ var proto_card = require('./json/proto_card');
 var g_clients = [];
 
 
-var makeTexts = require('./controller/makeTexts');
-var utils = require('./controller/utils.js');
-var roomManager = require('./controller/roomManager.js')(makeTexts, utils, io);
-var combat = require('./controller/combat.js')(makeTexts, roomManager);
-var cmdProcessor = require('./controller/cmdProcessor.js')(roomManager, combat);
-var userClass = require('./controller/user')(roomManager);
+var makeTexts = require('./lib/makeTexts');
+var utils = require('./lib/utils.js');
+var roomManager = require('./lib/roomManager.js')(makeTexts, utils, io);
+var combat = require('./lib/combat.js')(makeTexts, roomManager);
+var cmdProcessor = require('./lib/cmdProcessor.js')(roomManager, combat);
+var userClass = require('./lib/user')(roomManager);
+var dailyTimer = require('./lib/dailyTimer')(io);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -91,6 +91,7 @@ server.listen(port, function () {
 setInterval(function () {
     combat.worldTicker();
     roomManager.worldTicker();
+    dailyTimer.worldTicker();
 }, 3000);
 
 io.use(function (socket, next) {
@@ -133,19 +134,16 @@ io.sockets.on('connection', function (socket) {
     });
 });
 
-// 1) Create our database, supply location and options.
-//    This will create or open the underlying LevelDB store.
-var db = levelup('./db/db')
+var mysql = require('mysql');
+var pool  = mysql.createPool({
+    connectionLimit : 10,
+    host            : 'localhost',
+    user            : 'mud',
+    password        : 'sadfasdf',
+    database        : 'mud_dev'
+});
 
-// 2) put a key & value
-db.put('name', 'LevelUP', function (err) {
-    if (err) return console.log('Ooops!', err) // some kind of I/O error
-
-    // 3) fetch by key
-    db.get('name', function (err, value) {
-        if (err) return console.log('Ooops!', err) // likely the key was not found
-
-        // ta da!
-        console.log('name=' + value)
-    })
-})
+pool.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
+    if (error) throw error;
+    console.log('The solution is: ', results[0].solution);
+});
