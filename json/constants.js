@@ -21,4 +21,14 @@ module.exports = {
 
     INPUT_STATE_NORMAL : 0,
     INPUT_STATE_TERMINAL_PASSWORD : 1,
+
+    ROOM_ID_INVALID : 0,
+    OWNER_INVALID : 0,
+
+    // 방 아이템 상태
+    ROOM_ITEM_STATE_NOT_YET_GEN : 0,
+    ROOM_ITEM_STATE_GEN: 1,
+
+    //아이템 부패 상태
+    ITEM_DECOMPOSITION_STATE : 0,
 };

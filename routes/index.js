@@ -8,7 +8,6 @@ var passport = require('passport')
 // serialize
 // 인증후 사용자 정보를 세션에 저장
 passport.serializeUser(function (user, done) {
-    console.log('serialize');
     done(null, user);
 });
 
@@ -16,7 +15,6 @@ passport.serializeUser(function (user, done) {
 // 인증후, 사용자 정보를 세션에서 읽어서 request.user에 저장
 passport.deserializeUser(function (user, done) {
     //findById(id, function (err, user) {
-    console.log('deserialize');
     done(null, user);
     //});
 });

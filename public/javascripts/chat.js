@@ -32,38 +32,43 @@ $(function () {
         print(data);
     });
 
-    $("#message").focus();
+    var inpMsg = $('#message');
 
-    $("#message").keyup(function (event) {
+    inpMsg.focus();
+
+    inpMsg.keyup(function (event) {
         if (event.which == 38) {
             if (g_textHistoryIndex > 0)
                 g_textHistoryIndex--;
 
-            $("#message").val(g_textHistory[g_textHistoryIndex]);
+            inpMsg.val(g_textHistory[g_textHistoryIndex]);
         }
 
         if (event.which == 40) {
-            if (g_textHistoryIndex < g_textHistory.length)
+            if (g_textHistoryIndex < g_textHistory.length - 1)
                 g_textHistoryIndex++;
 
-            $("#message").val(g_textHistory[g_textHistoryIndex]);
+            inpMsg.val(g_textHistory[g_textHistoryIndex]);
         }
 
         if (event.keyCode != 13)
             return;
 
-        var msg = $('#message').val();
+        var msg = inpMsg.val();
         if (!msg)
             return;
 
-        $('#message').val('');
+        inpMsg.val('');
         socket.emit('send:message', {
             roomId: roomId,
             message: msg
         });
 
         g_textHistory.push(msg);
-        g_textHistoryIndex = g_textHistory.length - 1;
+        g_textHistoryIndex = g_textHistory.length;
+
+        print('> ' + msg +'<br/>');
+
     });
 
     $('body').resize(function () {

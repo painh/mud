@@ -17,6 +17,7 @@ var io = require('socket.io')(server);
 
 var proto_object = require('./json/proto_object');
 var proto_card = require('./json/proto_card');
+var proto_item = require('./json/proto_item');
 
 var g_clients = [];
 
@@ -134,16 +135,16 @@ io.sockets.on('connection', function (socket) {
     });
 });
 
-var mysql = require('mysql');
-var pool  = mysql.createPool({
-    connectionLimit : 10,
-    host            : 'localhost',
-    user            : 'mud',
-    password        : 'sadfasdf',
-    database        : 'mud_dev'
-});
-
-pool.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
-    if (error) throw error;
-    console.log('The solution is: ', results[0].solution);
-});
+// var mysql = require('mysql');
+// var pool  = mysql.createPool({
+//     connectionLimit : 10,
+//     host            : 'localhost',
+//     user            : 'mud',
+//     password        : 'sadfasdf',
+//     database        : 'mud_dev'
+// });
+//
+// pool.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
+//     if (error) throw error;
+//     console.log('The solution is: ', results[0].solution);
+// });
