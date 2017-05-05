@@ -83,7 +83,7 @@ app.use(function (err, req, res, next) {
 
 module.exports = app;
 
-var port = app.get('port') || 3000;
+var port = app.get('port') || 3001;
 
 server.listen(port, function () {
     console.log("open " + port);
@@ -120,13 +120,13 @@ io.sockets.on('connection', function (socket) {
     socket.user = new userClass(socket);
     roomManager.Join(socket.user.GetRoomId(), socket);
 
-    utils.RemoveFromList(g_clients, socket);
+    utils.RemoveFromObjList(g_clients, socket);
     g_clients.push(socket);
 
     socket.on('disconnect', function () {
         roomManager.Leave(this.user.GetRoomId(), this);
         combat.RemoveObj(this.user);
-        utils.RemoveFromList(g_clients, this);
+        utils.RemoveFromObjList(g_clients, this);
     });
     // Broadcast to room
     socket.on('send:message', function (data) {
