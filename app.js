@@ -120,7 +120,7 @@ io.sockets.on('connection', function (socket) {
     socket.user = new userClass(socket);
     roomManager.Join(socket.user.GetRoomId(), socket);
 
-    utils.RemoveFromObjList(g_clients, socket);
+    utils.RemoveFromList(g_clients, socket);
     g_clients.push(socket);
 
     socket.on('disconnect', function () {
