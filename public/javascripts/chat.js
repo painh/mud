@@ -17,6 +17,11 @@ $(function () {
         join('entry');
     });
 
+    socket.on('disconnect', function()
+    {
+        print("서버와의 접속이 끊어졌습니다.");
+    });
+
     function scroll() {
         var wtf = $('#content');
         var height = wtf[0].scrollHeight;

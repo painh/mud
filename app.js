@@ -24,9 +24,10 @@ var g_clients = [];
 
 var makeTexts = require('./lib/makeTexts');
 var utils = require('./lib/utils.js');
+var scriptManager = require('./lib/scriptManager.js')(makeTexts);
 var roomManager = require('./lib/roomManager.js')(makeTexts, utils, io);
 var combat = require('./lib/combat.js')(makeTexts, roomManager);
-var cmdProcessor = require('./lib/cmdProcessor.js')(roomManager, combat);
+var cmdProcessor = require('./lib/cmdProcessor.js')(roomManager, combat, scriptManager);
 var userClass = require('./lib/user')(roomManager);
 var dailyTimer = require('./lib/dailyTimer')(io);
 
@@ -83,7 +84,7 @@ app.use(function (err, req, res, next) {
 
 module.exports = app;
 
-var port = app.get('port') || 3001;
+var port = app.get('port') || 3000;
 
 server.listen(port, function () {
     console.log("open " + port);

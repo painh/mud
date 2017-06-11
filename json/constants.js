@@ -31,4 +31,9 @@ module.exports = {
 
     //아이템 부패 상태
     ITEM_DECOMPOSITION_STATE : 0,
+
+    //액션 이벤트
+    ACTION_EVENT_ENTER_ROOM : "enterRoom",
+    ACTION_EVENT_PICK_ITEM : "pickItem",
+
 };

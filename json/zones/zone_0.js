@@ -1,6 +1,6 @@
 module.exports = {
-    "entry": {
-        "protoId": "entry",
+    "room_entry": {
+        "protoId": "room_entry",
         "displayName": "해안",
         "description": "모래 사장이 펼쳐진 바닷가다. 부드러운 모래 벌판이다.",
         "proto_objects": {"1": {"protoId": 1, "respawnSec": 1}},
@@ -16,6 +16,6 @@ module.exports = {
         "displayName": "인트로2",
         "description": "인트로 설명",
         "proto_objects": {"1": {"protoId": 1, "respawnSec": 1}},
-        "exits": {"서": "entry"}
+        "exits": {"서": "room_entry"}
     }
 };

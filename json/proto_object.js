@@ -28,6 +28,7 @@ module.exports = {
             "attack_fire",
             "attack_frost"
         ],
+        "script" : "script_entry",
         "resistance": {
             [constants.ATTRIBUTE_TYPE_PHYSICAL]: 50,
             [constants.ATTRIBUTE_TYPE_FIRE] : 0,
