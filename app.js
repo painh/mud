@@ -127,7 +127,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('disconnect', function () {
         roomManager.Leave(this.user.GetRoomId(), this);
         combat.RemoveObj(this.user);
-        utils.RemoveFromObjList(g_clients, this);
+        utils.RemoveFromList(g_clients, this);
     });
     // Broadcast to room
     socket.on('send:message', function (data) {
