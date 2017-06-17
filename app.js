@@ -28,7 +28,7 @@ var scriptManager = require('./lib/scriptManager.js')(makeTexts);
 var roomManager = require('./lib/roomManager.js')(makeTexts, utils, io);
 var combat = require('./lib/combat.js')(makeTexts, roomManager);
 var cmdProcessor = require('./lib/cmdProcessor.js')(roomManager, combat, scriptManager);
-var userClass = require('./lib/user')(roomManager);
+var userClass = require('./lib/user')(roomManager, combat, scriptManager);
 var dailyTimer = require('./lib/dailyTimer')(io);
 
 // view engine setup
