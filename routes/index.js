@@ -4,7 +4,6 @@ var passport = require('passport')
     , FacebookStrategy = require('passport-facebook').Strategy
     , LocalStrategy = require('passport-local').Strategy;
 
-
 // serialize
 // 인증후 사용자 정보를 세션에 저장
 passport.serializeUser(function (user, done) {
@@ -18,16 +17,6 @@ passport.deserializeUser(function (user, done) {
     done(null, user);
     //});
 });
-
-passport.use(new FacebookStrategy({
-        clientID: '409638666082567',
-        clientSecret: 'f63901d4b2e4e6d45bf3746597e69c77',
-        callbackURL: "http://localhost:3000/auth/facebook/callback"
-    },
-    function (accessToken, refreshToken, profile, done) {
-        done(null, profile);
-    }
-));
 
 passport.use(new LocalStrategy(function (username, password, done) {
         // if (err) { return done(err); }
@@ -81,4 +70,17 @@ router.get('/mud/', function (req, res, next) {
     res.render('mud', {title: 'mud', hostname: req.headers.host});
 });
 
-module.exports = router;
+module.exports = function(app)
+{
+    passport.use(new FacebookStrategy({
+            clientID: '409638666082567',
+            clientSecret: 'f63901d4b2e4e6d45bf3746597e69c77',
+            callbackURL: app.get('facebookreturnurl')
+        },
+        function (accessToken, refreshToken, profile, done) {
+            done(null, profile);
+        }
+    ));
+
+    return router;
+};

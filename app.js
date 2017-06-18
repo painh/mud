@@ -1,5 +1,11 @@
 "use strict";
+
 var express = require('express');
+var app = express();
+app.set('port', process.env.PORT || 3000);
+app.set('facebookreturnurl', process.env.FACEBOOK_RETURN_URL|| 'http://localhost:3000/auth/facebook/callback');
+
+
 var exphbs = require('express-handlebars');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -8,7 +14,6 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var session = require('express-session');
 
-var app = express();
 var server = require('http').Server(app);
 //var io = require('socket.io')(server, {
 //    origins: 'localhost:* http://localhost:*'
@@ -31,7 +36,6 @@ var cmdProcessor = require('./lib/cmdProcessor.js')(roomManager, combat, scriptM
 var userClass = require('./lib/user')(roomManager, combat, scriptManager);
 var dailyTimer = require('./lib/dailyTimer')(io);
 
-app.set('port', process.env.PORT || 3000);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
@@ -49,7 +53,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
-var routes = require('./routes/index');
+var routes = require('./routes/index')(app);
 app.use('/', routes);
 
 // catch 404 and forward to error handler
