@@ -31,6 +31,7 @@ var cmdProcessor = require('./lib/cmdProcessor.js')(roomManager, combat, scriptM
 var userClass = require('./lib/user')(roomManager, combat, scriptManager);
 var dailyTimer = require('./lib/dailyTimer')(io);
 
+app.set('port', process.env.PORT || 3000);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
@@ -84,10 +85,8 @@ app.use(function (err, req, res, next) {
 
 module.exports = app;
 
-var port = app.get('port') || 3000;
-
-server.listen(port, function () {
-    console.log("open " + port);
+server.listen( app.get('port') , function () {
+    console.log("open " +  app.get('port') );
 });
 
 setInterval(function () {
