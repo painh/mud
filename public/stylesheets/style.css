@@ -52,3 +52,22 @@ body {
 p {
     margin:0px;
 }
+
+
+.tblMap{
+    margin: 0 auto;
+    background: black;
+}
+
+.tblMap td {
+    min-width: 40px;
+    min-height: 40px;
+}
+
+.tblRoom {
+    background : #888;
+}
+
+.tblCurRoom {
+    background : #0f0;
+}
